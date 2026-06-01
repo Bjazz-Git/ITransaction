@@ -36,9 +36,9 @@ public class ITransaction {
             adminDashboard();
         }
 
-        for (User user : users){
-            if (loginResult.equals(user.getUsername())){
-                customerDashboard(user.getUsername());
+        for (Customer customer : customers){
+            if (loginResult.equals(customer.getUsername())){
+                customerDashboard(customer);
             }
         }
     }
@@ -81,25 +81,26 @@ public class ITransaction {
 
     private static void adminDashboard(){
         boolean programOn = true;
+        AdminMenu adminMenu = new AdminMenu(customers);
 
         System.out.println("Welcome Admin!");
         while(programOn) {
-            printAdminDashBoard();
+            AdminMenu.printAdminDashboard();
             System.out.println("Type the number of one of the above options:");
             int option = scanner.nextInt();
 
             switch (option) {
                 // See all customers
                 case 1:
-                    printCustomers();
+                    adminMenu.printCustomers();
                     break;
                 // See all accounts
                 case 2:
-                    printAccounts();
+                    adminMenu.printAccounts();
                     break;
                 // Delete an account
                 case 3:
-                    deleteAccount();
+                    adminMenu.deleteAccount();
                     break;
                 default:
                     System.out.println("GoodBye.");
@@ -109,13 +110,14 @@ public class ITransaction {
         }
     }
 
-    private static void customerDashboard(String username){
+    private static void customerDashboard(Customer customer){
         boolean programOn = true;
+        CustomerMenu menu = new CustomerMenu(customer);
 
-        System.out.println("Welcome " + username);
+        System.out.println("Welcome " + customer.getUsername());
 
         while(programOn) {
-            printAdminDashBoard();
+            CustomerMenu.printCustomerDashboard();
             System.out.println("Type the number of one of the above options:");
             int option = scanner.nextInt();
 
@@ -134,30 +136,11 @@ public class ITransaction {
         }
     }
 
-    private static void printAdminDashBoard(){
-        System.out.println("1. See all customers");
-        System.out.println("2. See all accounts");
-        System.out.println("3. Delete an account");
-        System.out.println("4. Exit");
-    }
-
-    private static void printCustomerDashboard(){
-        System.out.println("1. Check account");
-        System.out.println("2. Check account balance");
-        System.out.println("3. Exit");
-    }
-
-    private static void printCustomers(){
-        for (Customer customer : customers){
-            System.out.println(customer);
-        }
-    }
-
-    private static void printAccounts(){
-
-    }
-
-    private static void deleteAccount(){
-
-    }
+//    private Customer getCustomer(String username){
+//        for (Customer customer : customers){
+//            return customer;
+//        }
+//
+//        return null;
+//    }
 }
