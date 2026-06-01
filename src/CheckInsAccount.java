@@ -1,16 +1,15 @@
 public class CheckInsAccount extends Account{
     String accountType = "CheckingsAccount";
-    String id;
-    double balance;
-    Customer customer;
 
     CheckInsAccount(String id, Customer customer, double balance){
         super(id, customer, balance);
+
     }
 
     @Override
     double addInterest() {
         return 0;
+
     }
 
     @Override
@@ -26,5 +25,15 @@ public class CheckInsAccount extends Account{
     @Override
     double getBalance() {
         return 0;
+    }
+
+    @Override
+    String getId() {
+        return id;
+    }
+
+    @Override
+    public String toString() {
+        return "CheckInsAccount{id=" + id + ", balance=$" + balance + "}";
     }
 }

@@ -4,7 +4,7 @@ abstract class Account {
     Customer accountHolder;
 
     Account(String accountNumber, Customer accountHolder, double balance){
-        this.id = id;
+        this.id = accountNumber;
         this.balance = balance;
         this.accountHolder = accountHolder;
     }
@@ -16,4 +16,6 @@ abstract class Account {
     abstract String getAccountType();
 
     abstract double getBalance();
+
+    abstract String getId();
 }

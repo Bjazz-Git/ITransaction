@@ -1,8 +1,5 @@
 public class SavingsAccount extends Account{
     String accountType = "SavingsAccount";
-    String id;
-    double balance;
-    Customer customer;
 
     SavingsAccount(String id, Customer customer, double balance){
         super(id, customer, balance);
@@ -26,5 +23,16 @@ public class SavingsAccount extends Account{
     @Override
     double getBalance() {
         return 0;
+    }
+
+    @Override
+    String getId() {
+        return id;
+    }
+
+
+    @Override
+    public String toString() {
+        return "SavingsAccount{id=" + id + ", balance=$" + balance + "}";
     }
 }
