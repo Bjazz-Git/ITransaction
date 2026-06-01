@@ -30,6 +30,11 @@ public class SavingsAccount extends Account{
         return id;
     }
 
+    @Override
+    boolean overdraftLimit() {
+        return false;
+    }
+
 
     @Override
     public String toString() {

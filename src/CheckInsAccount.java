@@ -33,6 +33,11 @@ public class CheckInsAccount extends Account{
     }
 
     @Override
+    boolean overdraftLimit() {
+        return false;
+    }
+
+    @Override
     public String toString() {
         return "CheckInsAccount{id=" + id + ", balance=$" + balance + "}";
     }

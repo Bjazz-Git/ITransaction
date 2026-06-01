@@ -4,23 +4,22 @@ import java.util.Scanner;
 
 public class AdminMenu {
     List<Customer> customers = new ArrayList<>();
-    private Scanner scanner = new Scanner(System.in);
 
     AdminMenu(List<Customer> customers){
         this.customers = customers;
     }
 
     public static void printAdminDashboard(){
-        System.out.println("1. See all customers");
-        System.out.println("2. See all accounts");
-        System.out.println("3. Delete an account");
-        System.out.println("4. Exit");
+        for (AdminOptions option : AdminOptions.values()){
+            System.out.println(option.getCount() + ". " + option.getOptionName());
+        }
     }
 
     public void printCustomers(){
         for (Customer customer : customers){
             System.out.println(customer);
         }
+        System.out.println();
     }
 
     public void printAccounts(){
@@ -43,5 +42,28 @@ public class AdminMenu {
         if (customer != null && account != null) {
             customer.getAccounts().remove(account);
         }
+    }
+
+    public void updateCustomer(Customer customer){
+        if (customer != null) {
+            System.out.println("Leave input blank if you wish to keep the original value");
+            String username = RetrieveInput.readString("Enter new username (" + customer.getName() + "): ");
+            String password = RetrieveInput.readString("Enter new password (" + customer.getPassword() + "): ");
+
+            if (!username.strip().isBlank()) {
+                customer.setUsername(username);
+            }
+            if (!password.strip().isBlank()) {
+                customer.setPassword(password);
+            }
+        }
+
+        else{
+            System.out.println("Customer selected is invalid.");
+        }
+    }
+
+    public void deleteCustomer(Customer customer){
+        customers.remove(customer);
     }
 }

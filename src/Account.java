@@ -18,4 +18,6 @@ abstract class Account {
     abstract double getBalance();
 
     abstract String getId();
+
+    abstract boolean overdraftLimit();
 }

@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Scanner;
 
 public class ITransaction {
-    static Scanner scanner = new Scanner(System.in);
     static String delimiter = " ";
     static int counter = 1;
     static List<Customer> customers = new ArrayList<>();
@@ -28,27 +27,27 @@ public class ITransaction {
     }
 
     private static String login() {
-        System.out.println("Please enter username and password, space separated");
-        String enteredUsernamePassword = scanner.nextLine();
+        while (true) {
+            String enteredUsernamePassword = RetrieveInput.readString("Please enter username and password, space separated");
 
-        if (validate(enteredUsernamePassword)) {
-            String[] usernamePassword = enteredUsernamePassword.split(delimiter);
-            String username = usernamePassword[0];
-            String password = usernamePassword[1];
+            if (validate(enteredUsernamePassword)) {
+                String[] usernamePassword = enteredUsernamePassword.split(delimiter);
+                String username = usernamePassword[0];
+                String password = usernamePassword[1];
 
-            if (username.equals("admin") && password.equals("admin123")) {
-                return "admin";
-            }
-
-            for (User user : users) {
-                if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
-                    return user.getUsername();
+                if (username.equals("admin") && password.equals("admin123")) {
+                    return "admin";
                 }
-            }
 
-            return "User could not be found";
-        } else {
-            return "validation failed";
+                for (User user : users) {
+                    if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
+                        return user.getUsername();
+                    }
+                }
+
+                System.out.println("User could not be found.");
+                System.out.println();
+            }
         }
     }
 
@@ -73,12 +72,12 @@ public class ITransaction {
             }
 
             System.out.println("Could not find a customer with this information");
-            return false;
         } else {
             System.out.println("Invalid input.");
             System.out.println("Make sure you provide only 2 inputs and space them apart with " + delimiter);
-            return false;
         }
+        System.out.println();
+        return false;
     }
 
 
@@ -89,30 +88,48 @@ public class ITransaction {
         System.out.println("Welcome Admin!");
         while (programOn) {
             AdminMenu.printAdminDashboard();
-            System.out.println("Type the number of one of the above options:");
-            int option = Integer.parseInt(scanner.nextLine());
+            System.out.println();
+            int option = RetrieveInput.readInt("Type the number of one of the above options:");
 
-            switch (option) {
+            switch (AdminOptions.values()[option - 1]) {
                 // See all customers
-                case 1:
+                case SEEALLCUSTOMERS:{
                     adminMenu.printCustomers();
                     break;
+                }
                 // See all accounts
-                case 2:
+                case SEEALLACCOUNTS: {
                     adminMenu.printAccounts();
                     break;
+                }
                 // Delete an account
-                case 3:
+                case DELETEANACCOUNT: {
                     adminMenu.printCustomers();
                     Customer customer = getCustomer();
                     Account account = getAccount(customer);
                     adminMenu.deleteAccount(customer, account);
                     break;
+                }
+                // Update a customer
+                case UPDATECUSTOMER: {
+                    adminMenu.printCustomers();
+                    Customer customer = getCustomer();
+                    adminMenu.updateCustomer(customer);
+                    break;
+                }
+                // Delete a customer
+                case DELETECUSTOMER: {
+                    adminMenu.printCustomers();
+                    Customer customer = getCustomer();
+                    adminMenu.deleteCustomer(customer);
+                    break;
+                }
                 // End program if above input is not provided
-                default:
+                case EXIT: {
                     System.out.println("GoodBye.");
                     programOn = false;
                     break;
+                }
             }
         }
     }
@@ -125,8 +142,7 @@ public class ITransaction {
 
         while (programOn) {
             CustomerMenu.printCustomerDashboard();
-            System.out.println("Type the number of one of the above options:");
-            int option = scanner.nextInt();
+            int option = RetrieveInput.readInt("Type the number of one of the above options:");
 
             switch (option) {
                 // Check Account
@@ -147,9 +163,6 @@ public class ITransaction {
     }
 
     private static void setupCustomers() {
-        //        CheckInsAccount checkInsAccount = new CheckInsAccount();
-//        SavingsAccount savingsAccount = new SavingsAccount();
-
         User u1 = new User("bob", "bob123");
         User u2 = new User("jeff", "jeff123");
         User u3 = new User("john", "john123");
@@ -192,8 +205,7 @@ public class ITransaction {
     }
 
     private static Customer getCustomer() {
-        System.out.println("Enter the user's id.");
-        int customerId = Integer.parseInt(scanner.nextLine());
+        int customerId = RetrieveInput.readInt("Enter the user's id.");
 
         for (Customer customer : customers) {
             if (customer.getId() == customerId) {
@@ -212,8 +224,7 @@ public class ITransaction {
                 System.out.println(accounts.get(i));
             }
 
-            System.out.println("Enter the account's id:");
-            String id = scanner.nextLine();
+            String id = RetrieveInput.readString("Enter the account's id:");
 
             for (int i = 0; i < accounts.size(); i++) {
                 Account account = accounts.get(i);
