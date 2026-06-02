@@ -1,5 +1,17 @@
 package itransaction.model;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+@JsonTypeInfo(
+        use=JsonTypeInfo.Id.NAME,
+        include=JsonTypeInfo.As.EXISTING_PROPERTY,
+        property="accountType"
+)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = CheckingsAccount.class, name = "CheckingsAccount"),
+        @JsonSubTypes.Type(value = SavingsAccount.class, name = "SavingsAccount")
+})
 public abstract class Account {
     String id;
     double balance;
@@ -9,6 +21,10 @@ public abstract class Account {
         this.id = accountNumber;
         this.balance = balance;
         this.accountHolder = accountHolder;
+    }
+
+    Account(){
+
     }
 
     abstract double addInterest();

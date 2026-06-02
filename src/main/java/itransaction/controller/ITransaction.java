@@ -209,8 +209,8 @@ public class ITransaction {
         customers.add(c3);
     }
 
-    private static CheckInsAccount createCheckingAccount(Customer customer) {
-        return new CheckInsAccount(String.valueOf((int) (Math.random() * 998) + 1), customer, (int) (Math.random() * 1000), 50);
+    private static CheckingsAccount createCheckingAccount(Customer customer) {
+        return new CheckingsAccount(String.valueOf((int) (Math.random() * 998) + 1), customer, (int) (Math.random() * 1000), 50);
     }
 
     private static SavingsAccount createSavingsAccount(Customer customer) {

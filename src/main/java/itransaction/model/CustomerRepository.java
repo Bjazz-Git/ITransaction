@@ -1,6 +1,5 @@
 package itransaction.model;
 
-import itransaction.view.RetrieveInput;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Repository;
 
@@ -48,8 +47,8 @@ public class CustomerRepository {
         customers.add(c3);
     }
 
-    private static CheckInsAccount createCheckingAccount(Customer customer) {
-        return new CheckInsAccount(String.valueOf((int) (Math.random() * 998) + 1), customer, (int) (Math.random() * 1000), 50);
+    private static CheckingsAccount createCheckingAccount(Customer customer) {
+        return new CheckingsAccount(String.valueOf((int) (Math.random() * 998) + 1), customer, (int) (Math.random() * 1000), 50);
     }
 
     private static SavingsAccount createSavingsAccount(Customer customer) {
@@ -82,5 +81,9 @@ public class CustomerRepository {
         }
 
         return null;
+    }
+
+    public void createCustomer(Customer customer){
+        customers.add(customer);
     }
 }

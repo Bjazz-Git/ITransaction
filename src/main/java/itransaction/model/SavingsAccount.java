@@ -7,6 +7,10 @@ public class SavingsAccount extends Account{
         super(id, customer, balance);
     }
 
+    public SavingsAccount(){
+
+    }
+
     @Override
     double addInterest() {
         return 0;

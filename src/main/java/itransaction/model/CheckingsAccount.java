@@ -1,12 +1,20 @@
 package itransaction.model;
 
-public class CheckInsAccount extends Account{
+public class CheckingsAccount extends Account{
     String accountType = "CheckingsAccount";
     double overdraftLimit;
 
-    public CheckInsAccount(String id, Customer customer, double balance, double overdraftLimit){
+    public CheckingsAccount(String id, Customer customer, double balance, double overdraftLimit){
         super(id, customer, balance);
         this.overdraftLimit = overdraftLimit;
+    }
+
+    public CheckingsAccount(String id, Customer customer, double balance){
+        super(id, customer, balance);
+        this.overdraftLimit = 50;
+    }
+
+    CheckingsAccount(){
 
     }
 
