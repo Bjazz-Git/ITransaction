@@ -11,7 +11,9 @@ abstract class Account {
 
     abstract double addInterest();
 
-    abstract void Deposit(double amount);
+    abstract void deposit(double amount);
+
+    abstract double withdraw(double amount);
 
     abstract String getAccountType();
 
@@ -19,5 +21,5 @@ abstract class Account {
 
     abstract String getId();
 
-    abstract boolean overdraftLimit();
+    abstract boolean overdraftLimit(double amount);
 }

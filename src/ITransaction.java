@@ -144,17 +144,25 @@ public class ITransaction {
             CustomerMenu.printCustomerDashboard();
             int option = RetrieveInput.readInt("Type the number of one of the above options:");
 
-            switch (option) {
+            switch (CustomerOptions.values()[option - 1]) {
                 // Check Account
-                case 1:
-                    menu.printAccount();
+                case CHECKACCOUNT:
+                    menu.printAccounts();
                     break;
                 // Check balance
-                case 2:
+                case CHECKACCOUNTBALANCE:
                     menu.printBalance();
                     break;
-                // End program if above input is not provided
-                default:
+                // Withdraw
+                case WITHDRAW:
+                    menu.withdraw();
+                    break;
+                // Deposit
+                case DEPOSIT:
+                    menu.deposit();
+                    break;
+                // End program
+                case EXIT:
                     System.out.println("GoodBye.");
                     programOn = false;
                     break;
@@ -197,11 +205,11 @@ public class ITransaction {
     }
 
     private static CheckInsAccount createCheckingAccount(Customer customer) {
-        return new CheckInsAccount("123", customer, (int) (Math.random() * 1000));
+        return new CheckInsAccount(String.valueOf((int) (Math.random() * 998) + 1), customer, (int) (Math.random() * 1000), 50);
     }
 
     private static SavingsAccount createSavingsAccount(Customer customer) {
-        return new SavingsAccount("123", customer, (int) (Math.random() * 1000));
+        return new SavingsAccount(String.valueOf((int) (Math.random() * 998) + 1), customer, (int) (Math.random() * 1000));
     }
 
     private static Customer getCustomer() {

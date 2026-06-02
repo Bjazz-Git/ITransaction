@@ -11,4 +11,8 @@ public class RetrieveInput {
     public static int readInt(String message){
         return Integer.parseInt(readString(message));
     }
+
+    public static double readDouble(String message){
+        return Double.parseDouble(readString(message));
+    }
 }
