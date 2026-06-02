@@ -1,6 +1,8 @@
+package itransaction.model;
+
 public enum CustomerOptions {
-    CHECKACCOUNT(1, "Check Account"),
-    CHECKACCOUNTBALANCE(2, "Check Account Balance"),
+    CHECKACCOUNT(1, "Check model.Account"),
+    CHECKACCOUNTBALANCE(2, "Check model.Account Balance"),
     WITHDRAW(3, "Withdraw from account"),
     DEPOSIT(4, "Deposit into account"),
     EXIT(5, "Exit");

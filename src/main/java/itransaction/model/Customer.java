@@ -1,3 +1,5 @@
+package itransaction.model;
+
 import java.util.List;
 
 public class Customer extends User {
@@ -40,7 +42,7 @@ public class Customer extends User {
 
     @Override
     public String toString() {
-        return "Customer{" +
+        return "model.Customer{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", accounts=" + accounts +

@@ -3,6 +3,7 @@ Admin.class
 AdminOptions.class
 CustomerOptions.class
 ITransaction$1.class
+com\itransaction\Application.class
 Customer.class
 SavingsAccount.class
 Account.class

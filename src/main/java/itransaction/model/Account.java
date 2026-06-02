@@ -1,4 +1,6 @@
-abstract class Account {
+package itransaction.model;
+
+public abstract class Account {
     String id;
     double balance;
     Customer accountHolder;
@@ -11,15 +13,15 @@ abstract class Account {
 
     abstract double addInterest();
 
-    abstract void deposit(double amount);
+    public abstract void deposit(double amount);
 
-    abstract double withdraw(double amount);
+    public abstract double withdraw(double amount);
 
-    abstract String getAccountType();
+    public abstract String getAccountType();
 
-    abstract double getBalance();
+    public abstract double getBalance();
 
-    abstract String getId();
+    public abstract String getId();
 
     abstract boolean overdraftLimit(double amount);
 }

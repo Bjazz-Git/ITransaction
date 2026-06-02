@@ -1,3 +1,5 @@
+package itransaction.view;
+
 import java.util.Scanner;
 
 public class RetrieveInput {

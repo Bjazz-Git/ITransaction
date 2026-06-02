@@ -1,10 +1,16 @@
+package itransaction.view;
+
+import itransaction.model.Account;
+import itransaction.model.AdminOptions;
+import itransaction.model.Customer;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class AdminMenu {
     List<Customer> customers = new ArrayList<>();
 
-    AdminMenu(List<Customer> customers){
+    public AdminMenu(List<Customer> customers){
         this.customers = customers;
     }
 
@@ -25,7 +31,7 @@ public class AdminMenu {
         for (Customer customer : customers){
             List<Account> customerAccounts = customer.getAccounts();
             if (customerAccounts.isEmpty()){
-                System.out.println("Customer has no accounts");
+                System.out.println("model.Customer has no accounts");
             }
 
             System.out.println(customer.getUsername() + "'s accounts");
@@ -58,7 +64,7 @@ public class AdminMenu {
         }
 
         else{
-            System.out.println("Customer selected is invalid.");
+            System.out.println("model.Customer selected is invalid.");
         }
     }
 

@@ -1,9 +1,15 @@
+package itransaction.view;
+
+import itransaction.model.Account;
+import itransaction.model.Customer;
+import itransaction.model.CustomerOptions;
+
 import java.util.List;
 
 public class CustomerMenu {
     Customer customer;
 
-    CustomerMenu(Customer customer){
+    public CustomerMenu(Customer customer){
        this.customer = customer;
     }
 

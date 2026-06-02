@@ -1,3 +1,10 @@
+package itransaction.controller;
+
+import itransaction.model.*;
+import itransaction.view.AdminMenu;
+import itransaction.view.CustomerMenu;
+import itransaction.view.RetrieveInput;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,21 +15,21 @@ public class ITransaction {
     static List<User> users = new ArrayList<>();
 
 
-    public static void main(String[] args) {
-        welcome();
-        setupCustomers();
-        String loginResult = login();
-
-        if (loginResult.equals("admin")) {
-            adminDashboard();
-        }
-
-        for (Customer customer : customers) {
-            if (loginResult.equals(customer.getUsername())) {
-                customerDashboard(customer);
-            }
-        }
-    }
+//    public static void main() {
+//        welcome();
+//        setupCustomers();
+//        String loginResult = login();
+//
+//        if (loginResult.equals("admin")) {
+//            adminDashboard();
+//        }
+//
+//        for (Customer customer : customers) {
+//            if (loginResult.equals(customer.getUsername())) {
+//                customerDashboard(customer);
+//            }
+//        }
+//    }
 
     private static String login() {
         while (true) {
@@ -43,7 +50,7 @@ public class ITransaction {
                     }
                 }
 
-                System.out.println("User could not be found.");
+                System.out.println("model.User could not be found.");
                 System.out.println();
             }
         }
@@ -83,7 +90,7 @@ public class ITransaction {
         boolean programOn = true;
         AdminMenu adminMenu = new AdminMenu(customers);
 
-        System.out.println("Welcome Admin!");
+        System.out.println("Welcome model.Admin!");
         while (programOn) {
             AdminMenu.printAdminDashboard();
             System.out.println();
@@ -143,7 +150,7 @@ public class ITransaction {
             int option = RetrieveInput.readInt("Type the number of one of the above options:");
 
             switch (CustomerOptions.values()[option - 1]) {
-                // Check Account
+                // Check model.Account
                 case CHECKACCOUNT:
                     menu.printAccounts();
                     break;

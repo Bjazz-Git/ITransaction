@@ -1,8 +1,10 @@
+package itransaction.model;
+
 public enum AdminOptions {
     SEEALLCUSTOMERS(1, "See all customers"),
     SEEALLACCOUNTS(2, "See all accounts"),
     DELETEANACCOUNT(3, "Delete account"),
-    UPDATECUSTOMER(4, "Update Customer"),
+    UPDATECUSTOMER(4, "Update model.Customer"),
     DELETECUSTOMER(5, "Delete customer"),
     EXIT(6, "Exit");
 
