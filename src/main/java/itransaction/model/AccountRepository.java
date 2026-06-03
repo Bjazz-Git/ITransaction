@@ -73,10 +73,18 @@ public class AccountRepository {
         List<Account> accounts  = getAllAccounts();
 
         for (int i = 0; i < accounts.size(); i++){
-            if (accounts.get(i).getId().equals(id)){
-                accounts.set(i, account);
-                // Ends method after update happens
-                return;
+            if (accounts.get(i).getId().equals(account.getId())){
+                Customer customer = accounts.get(i).getAccountHolder();
+                for (int j = 0; j < customer.getAccounts().size(); j++){
+                    if (customer.getAccounts().get(j).getId().equals(account.getId())) {
+                        // Sets account holder to customer
+                        account.setAccountHolder(customer);
+                        // Updates account with new information
+                        customer.getAccounts().set(j, account);
+                        // Ends method after update happens
+                        return;
+                    }
+                }
             }
         }
 
@@ -85,11 +93,17 @@ public class AccountRepository {
     // DeleteAccount
     public void deleteAccount(String id){
         List<Account> accounts  = getAllAccounts();
+
         for (int i = 0; i < accounts.size(); i++){
             if (accounts.get(i).getId().equals(id)){
-                accounts.remove(i);
-                // Ends method after delete happens
-                return;
+                Customer customer = accounts.get(i).getAccountHolder();
+                for (int j = 0; j < customer.getAccounts().size(); j++){
+                    if (customer.getAccounts().get(j).getId().equals(id)) {
+                        customer.getAccounts().remove(j);
+                        // Ends method after delete happens
+                        return;
+                    }
+                }
             }
         }
     }

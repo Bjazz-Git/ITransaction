@@ -89,7 +89,7 @@ public class TransactionController {
 
     // CreateAccount (Assign to customer)
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/{id}/accounts/")
+    @PostMapping("/id/{id}/accounts")
     void createAccount(@RequestBody Account account, @PathVariable int id){
         // Get the account's owner and store that information in the account
         Customer accountCustomer = customerRepository.getCustomerById(id);
@@ -99,7 +99,7 @@ public class TransactionController {
 
     // UpdateAccount
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PutMapping("{id}/accounts/")
+    @PutMapping("/id/{id}/accounts")
     void updateAccount(@PathVariable String id, @RequestBody Account account){
         accountRepository.updateAccount(id, account);
     }
