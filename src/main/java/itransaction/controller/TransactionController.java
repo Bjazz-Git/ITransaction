@@ -1,9 +1,11 @@
 package itransaction.controller;
 
 import itransaction.model.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +18,9 @@ public class TransactionController {
     AccountRepository accountRepository;
     double premiumThreshold = 1000;
 
+    @Autowired
+    CustomerRepo repo;
+
     public TransactionController(CustomerRepository customerRepository, AccountRepository accountRepository){
         this.customerRepository = customerRepository;
         this.accountRepository = accountRepository;
@@ -24,7 +29,7 @@ public class TransactionController {
     // GetAllCustomers
     @GetMapping("")
     List<Customer> getAllCustomers(){
-            return customerRepository.getCustomers();
+        return  repo.findAll();
     }
 
     // GetCustomerByID

@@ -32,3 +32,5 @@ bin/
 ITransaction.iml
 
 .idea
+
+/src/main/resources/application.properties

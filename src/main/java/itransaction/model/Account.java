@@ -3,6 +3,7 @@ package itransaction.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 @JsonTypeInfo(
         use=JsonTypeInfo.Id.NAME,
@@ -13,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @JsonSubTypes.Type(value = CheckingsAccount.class, name = "CheckingsAccount"),
         @JsonSubTypes.Type(value = SavingsAccount.class, name = "SavingsAccount")
 })
+@Document(collection = "accounts")
 public abstract class Account {
     String id;
     double balance;
