@@ -1,5 +1,7 @@
 package itransaction.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import java.util.List;
 
 public class Customer extends User {

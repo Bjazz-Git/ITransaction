@@ -75,7 +75,7 @@ public class CustomerRepository {
 
     public Customer getCustomerByName(String name) {
         for (Customer customer : customers) {
-            if (customer.getName().equals(name)) {
+            if (customer.getName().equalsIgnoreCase(name)) {
                 return customer;
             }
         }
@@ -83,7 +83,42 @@ public class CustomerRepository {
         return null;
     }
 
+    public List<Customer> getPremiumCustomers(double minimum){
+        List<Customer> premiumCustomers = new ArrayList<>();
+        for (Customer customer: customers){
+            List<Account> accounts = customer.getAccounts();
+            double totalBalance = 0;
+            for (Account account : accounts){
+                totalBalance += account.balance;
+            }
+
+            if (totalBalance > minimum){
+                premiumCustomers.add(customer);
+            }
+        }
+
+        return premiumCustomers;
+    }
+
     public void createCustomer(Customer customer){
         customers.add(customer);
+    }
+
+    public void updateCustomer(Customer customer, int id){
+        for (int i = 0; i < customers.size(); i++){
+            if (customers.get(i).getId() == id){
+                customers.set(i, customer);
+                break;
+            }
+        }
+    }
+
+    public void deleteCustomer(int id){
+        for (int i = 0; i < customers.size(); i++){
+            if (customers.get(i).getId() == id){
+                customers.remove(i);
+                break;
+            }
+        }
     }
 }

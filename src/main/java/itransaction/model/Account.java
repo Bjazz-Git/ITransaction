@@ -1,5 +1,6 @@
 package itransaction.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
@@ -15,6 +16,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public abstract class Account {
     String id;
     double balance;
+    // Prevents infinite loop of child and parent data
+    @JsonIgnore
     Customer accountHolder;
 
     Account(String accountNumber, Customer accountHolder, double balance){
@@ -40,4 +43,8 @@ public abstract class Account {
     public abstract String getId();
 
     abstract boolean overdraftLimit(double amount);
+
+    public abstract Customer getAccountHolder();
+
+    public abstract void setAccountHolder(Customer customer);
 }

@@ -3,8 +3,8 @@ package itransaction.model;
 public class SavingsAccount extends Account{
     String accountType = "SavingsAccount";
 
-    public SavingsAccount(String id, Customer customer, double balance){
-        super(id, customer, balance);
+    public SavingsAccount(String id, Customer accountHolder, double balance){
+        super(id, accountHolder, balance);
     }
 
     public SavingsAccount(){
@@ -69,6 +69,16 @@ public class SavingsAccount extends Account{
     @Override
     boolean overdraftLimit(double amount) {
         return balance - amount < 100;
+    }
+
+    @Override
+    public Customer getAccountHolder() {
+        return accountHolder;
+    }
+
+    @Override
+    public void setAccountHolder(Customer customer) {
+        accountHolder =customer;
     }
 
 

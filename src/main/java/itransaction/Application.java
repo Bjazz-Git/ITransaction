@@ -1,6 +1,7 @@
 package itransaction;
 
 import itransaction.controller.TransactionController;
+import itransaction.model.AccountRepository;
 import itransaction.model.CustomerRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -16,8 +17,11 @@ public class Application {
     @Bean
     CommandLineRunner runner(){
         return args -> {
-            CustomerRepository repository = new CustomerRepository();
-            TransactionController controller = new TransactionController(repository);
+            // Repositories
+            CustomerRepository customerRepository = new CustomerRepository();
+            AccountRepository accountRepository = new AccountRepository(customerRepository);
+
+            TransactionController controller = new TransactionController(customerRepository, accountRepository);
         };
     }
 }
