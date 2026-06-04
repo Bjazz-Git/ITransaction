@@ -53,7 +53,7 @@ public class TransactionController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("")
     void createCustomer(@RequestBody Customer customer){
-        customerRepository.createCustomer(customer);
+        customerRepo.save(customer);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
