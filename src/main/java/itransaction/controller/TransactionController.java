@@ -58,17 +58,19 @@ public class TransactionController {
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PutMapping("/{id}")
+    @PutMapping("")
     // UpdateCustomer
-    void updateCustomer(@RequestBody Customer customer, @PathVariable int id){
-        customerRepository.updateCustomer(customer, id);
+    void updateCustomer(@RequestBody Customer customer){
+        customerRepo.save(customer);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
     // DeleteCustomer
     void deleteCustomer(@PathVariable int id){
-        customerRepository.deleteCustomer(id);
+        Customer customer = customerRepo.findById(id).orElseThrow(()->
+                new RuntimeException("Customer not found with ID: " + id));
+        customerRepo.delete(customer);
     }
 
     // GetAllAccounts
