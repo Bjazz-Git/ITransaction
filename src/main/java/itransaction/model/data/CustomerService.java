@@ -98,6 +98,29 @@ public class CustomerService {
         customerRepo.deleteById(id);
     }
 
+    // Get all Premium Customers
+    public List<Customer> getAllPremiumCustomers(double premium){
+        List<Customer> customers = getAllCustomers();
+        List<Customer> premiumCustomers = new ArrayList<>();
+
+        // Loops through all customers
+        for (Customer customer : customers){
+            // Stores the value of the customer's accounts
+            double totalValue = 0;
+            // Loops through all the customer's accounts and sums there balance
+            for (Account account : customer.getAccounts()){
+                totalValue += account.getBalance();
+            }
+
+            // If the total value across accounts is greater than premium, then that customer is a premium customer
+            if (totalValue > premium){
+                premiumCustomers.add(customer);
+            }
+        }
+
+        return premiumCustomers;
+    }
+
     // Ensures that when a customer is added there accounts are unique
     private List<Account> verifyAccounts(List<Account> accounts){
         List<Account> customerAccounts = new ArrayList<>();

@@ -47,7 +47,7 @@ public class TransactionController {
     // GetPremiumCustomers
     @GetMapping("/premium")
     List<Customer> getPremiumCustomers(){
-        return null;
+        return customerService.getAllPremiumCustomers(premiumThreshold);
     }
 
     // CreateCustomer
