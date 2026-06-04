@@ -1,10 +1,14 @@
 package itransaction.model;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.OneToMany;
 import org.springframework.data.annotation.Id;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Document(collection = "customer")
@@ -14,6 +18,7 @@ public class Customer extends User {
     @Field("mongo_id")
     private String mongoId = new ObjectId().toString();
     private String name;
+    @DocumentReference
     private List<Account> accounts;
 
     public Customer(int id, String name, String username, String password, List<Account> accounts) {
@@ -47,12 +52,19 @@ public class Customer extends User {
         this.accounts = accounts;
     }
 
+//    public void addAccounts(Account account){
+//        if (this.accounts == null){
+//            this.accounts = new ArrayList<>();
+//        }
+//        this.accounts.add(account);
+//        account.setAccountHolder(this);
+//    }
+
     @Override
     public String toString() {
         return "model.Customer{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", accounts=" + accounts +
                 '}';
     }
 

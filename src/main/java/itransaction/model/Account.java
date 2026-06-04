@@ -1,9 +1,14 @@
 package itransaction.model;
 
+
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import org.hibernate.annotations.ManyToAny;
 import org.springframework.data.annotation.Id;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @JsonTypeInfo(
@@ -15,19 +20,19 @@ import org.springframework.data.mongodb.core.mapping.Document;
         @JsonSubTypes.Type(value = CheckingsAccount.class, name = "CheckingsAccount"),
         @JsonSubTypes.Type(value = SavingsAccount.class, name = "SavingsAccount")
 })
-@Document(collection = "accounts")
+@Document(collection = "account")
 public abstract class Account {
     @Id
     String id;
     double balance;
-    // Prevents infinite loop of child and parent data
-    @JsonIgnore
-    Customer accountHolder;
 
-    Account(String accountNumber, Customer accountHolder, double balance){
+//    @Indexed(unique = true)
+//    private Integer customerId;
+
+    Account(String accountNumber, double balance){
         this.id = accountNumber;
         this.balance = balance;
-        this.accountHolder = accountHolder;
+//        this.accountHolder = accountHolder;
     }
 
     Account(){
@@ -48,7 +53,7 @@ public abstract class Account {
 
     abstract boolean overdraftLimit(double amount);
 
-    public abstract Customer getAccountHolder();
-
-    public abstract void setAccountHolder(Customer customer);
+//    public abstract Customer getAccountHolder();
+//
+//    public abstract void setAccountHolder(Customer customer);
 }

@@ -1,8 +1,10 @@
 package itransaction.controller;
 
 import itransaction.model.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import itransaction.model.data.AccountService;
+import itransaction.model.data.CustomerService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -14,104 +16,103 @@ import java.util.Optional;
 public class TransactionController {
     static List<User> users = new ArrayList<>();
     static List<Customer> customers = new ArrayList<>();
-    CustomerRepository customerRepository;
-    AccountRepository accountRepository;
     double premiumThreshold = 1000;
+    CustomerService customerService;
+    AccountService accountService;
 
-    @Autowired
-    CustomerRepo customerRepo;
 
-    public TransactionController(CustomerRepository customerRepository, AccountRepository accountRepository){
-        this.customerRepository = customerRepository;
-        this.accountRepository = accountRepository;
+    public TransactionController(CustomerService customerService, AccountService accountService){
+        this.customerService = customerService;
+        this.accountService = accountService;
     }
 
     // GetAllCustomers
     @GetMapping("")
     List<Customer> getAllCustomers(){
-        return  customerRepo.findAll();
+        return customerService.getAllCustomers();
     }
 
     // GetCustomerByID
     @GetMapping("id/{id}")
-    Optional<Customer> getCustomerById(@PathVariable Integer id){
-        return customerRepo.findById(id);
+    Customer getCustomerById(@PathVariable Integer id){
+        return customerService.getCustomerById(id);
     }
 
     // GetCustomerByName
     @GetMapping("name/{name}")
     Customer getCustomerByName(@PathVariable String name){
-        return customerRepo.findByNameIgnoreCase(name);
+        return customerService.getCustomerByName(name);
     }
 
     // GetPremiumCustomers
     @GetMapping("/premium")
     List<Customer> getPremiumCustomers(){
-        return customerRepository.getPremiumCustomers(premiumThreshold);
+        return null;
     }
 
     // CreateCustomer
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("")
-    void createCustomer(@RequestBody Customer customer){
-        customerRepo.save(customer);
+    ResponseEntity<Customer> createCustomer(@RequestBody Customer customer){
+        return customerService.createCustomer(customer);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PutMapping("")
+    @PutMapping("/{id}")
     // UpdateCustomer
-    void updateCustomer(@RequestBody Customer customer){
-        customerRepo.save(customer);
+    void updateCustomer(@RequestBody Customer customer, @PathVariable int id){
+        customerService.updateCustomer(customer, id);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
     // DeleteCustomer
     void deleteCustomer(@PathVariable int id){
-        Customer customer = customerRepo.findById(id).orElseThrow(()->
-                new RuntimeException("Customer not found with ID: " + id));
-        customerRepo.delete(customer);
+        customerService.deleteCustomer(id);
     }
 
     // GetAllAccounts
     @GetMapping("/accounts")
     List<Account> getAllAccounts(){
-        return accountRepository.getAllAccounts();
+        return accountService.getAllAccounts();
     }
 
     // GetAccountById
     @GetMapping("/accounts/id/{id}")
     Account getAccountsById(@PathVariable String id){
-        return accountRepository.getAccountById(id);
+        return accountService.getAccountsById(id);
     }
 
     // GetAccountByName
     @GetMapping("/accounts/name/{name}")
     List<Account> getAccountByName(@PathVariable String name){
-        return accountRepository.getAccountsByName(name);
+        // Get the customer by their name and pass them into accountService
+        Customer customer = customerService.getCustomerByName(name);
+        return accountService.getAccountByName(customer);
     }
 
     // CreateAccount (Assign to customer)
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/id/{id}/accounts")
     void createAccount(@RequestBody Account account, @PathVariable int id){
-        // Get the account's owner and store that information in the account
-        Customer accountCustomer = customerRepository.getCustomerById(id);
-        account.setAccountHolder(accountCustomer);
-        accountRepository.createAccount(account);
+        Customer customer = customerService.getCustomerById(id);
+        // Add account to account repo
+        accountService.createAccount(account, customer);
+        // Update customer with new account
+        customerService.updateCustomer(customer, customer.getId());
     }
 
     // UpdateAccount
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/id/{id}/accounts")
     void updateAccount(@PathVariable String id, @RequestBody Account account){
-        accountRepository.updateAccount(id, account);
+        accountService.updateAccount(id, account);
     }
 
     // DeleteAccount
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/accounts/{id}")
     void deleteAccount(@PathVariable String id){
-        accountRepository.deleteAccount(id);
+        accountService.deleteAccount(id);
     }
 }

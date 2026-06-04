@@ -3,8 +3,8 @@ package itransaction.model;
 public class SavingsAccount extends Account{
     String accountType = "SavingsAccount";
 
-    public SavingsAccount(String id, Customer accountHolder, double balance){
-        super(id, accountHolder, balance);
+    public SavingsAccount(String id, double balance){
+        super(id, balance);
     }
 
     public SavingsAccount(){
@@ -71,15 +71,15 @@ public class SavingsAccount extends Account{
         return balance - amount < 100;
     }
 
-    @Override
-    public Customer getAccountHolder() {
-        return accountHolder;
-    }
-
-    @Override
-    public void setAccountHolder(Customer customer) {
-        accountHolder =customer;
-    }
+//    @Override
+//    public Customer getAccountHolder() {
+//        return accountHolder;
+//    }
+//
+//    @Override
+//    public void setAccountHolder(Customer customer) {
+//        accountHolder =customer;
+//    }
 
 
     @Override

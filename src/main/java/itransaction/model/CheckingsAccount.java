@@ -4,13 +4,13 @@ public class CheckingsAccount extends Account{
     String accountType = "CheckingsAccount";
     double overdraftLimit;
 
-    public CheckingsAccount(String id, Customer accountHolder, double balance, double overdraftLimit){
-        super(id, accountHolder, balance);
+    public CheckingsAccount(String id, double balance, double overdraftLimit){
+        super(id, balance);
         this.overdraftLimit = overdraftLimit;
     }
 
-    public CheckingsAccount(String id, Customer accountHolder, double balance){
-        super(id, accountHolder, balance);
+    public CheckingsAccount(String id, double balance){
+        super(id, balance);
         this.overdraftLimit = 50;
     }
 
@@ -80,15 +80,15 @@ public class CheckingsAccount extends Account{
         return balance - amount < overdraftLimit;
     }
 
-    @Override
-    public Customer getAccountHolder() {
-        return accountHolder;
-    }
-
-    @Override
-    public void setAccountHolder(Customer customer) {
-        accountHolder = customer;
-    }
+//    @Override
+//    public Customer getAccountHolder() {
+//        return accountHolder;
+//    }
+//
+//    @Override
+//    public void setAccountHolder(Customer customer) {
+//        accountHolder = customer;
+//    }
 
     @Override
     public String toString() {
