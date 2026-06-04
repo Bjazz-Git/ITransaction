@@ -1,38 +1,33 @@
 package itransaction.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import org.springframework.data.annotation.Id;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Document(collection = "customer")
 public class Customer extends User {
     @Id
-    private String id;
+    private int id;
+    @Field("mongo_id")
+    private String mongoId = new ObjectId().toString();
     private String name;
     private List<Account> accounts;
-//    @Field("customer_username")
-//    private String username;
-//    @Field("customer_password")
-//    private String password;
 
-    public Customer(String id, String name, String username, String password, List<Account> accounts) {
+    public Customer(int id, String name, String username, String password, List<Account> accounts) {
         super(username, password);
         this.id = id;
         this.name = name;
         this.accounts = accounts;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -81,11 +76,11 @@ public class Customer extends User {
         this.username = username;
     }
 
-//    public ObjectId getObjectId() {
-//        return objectId;
-//    }
-//
-//    public void setObjectId(ObjectId objectId) {
-//        this.objectId = objectId;
-//    }
+    public String getMongoId() {
+        return mongoId;
+    }
+
+    public void setMongoId(String mongoId) {
+        this.mongoId = mongoId;
+    }
 }

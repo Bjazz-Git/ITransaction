@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +18,7 @@ public class TransactionController {
     double premiumThreshold = 1000;
 
     @Autowired
-    CustomerRepo repo;
+    CustomerRepo customerRepo;
 
     public TransactionController(CustomerRepository customerRepository, AccountRepository accountRepository){
         this.customerRepository = customerRepository;
@@ -29,13 +28,13 @@ public class TransactionController {
     // GetAllCustomers
     @GetMapping("")
     List<Customer> getAllCustomers(){
-        return  repo.findAll();
+        return  customerRepo.findAll();
     }
 
     // GetCustomerByID
     @GetMapping("id/{id}")
     Customer getCustomerById(@PathVariable Integer id){
-       return customerRepository.getCustomerById(id);
+        return customerRepository.getCustomerById(id);
     }
 
     // GetCustomerByName

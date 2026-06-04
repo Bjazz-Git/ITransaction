@@ -1,5 +1,6 @@
 package itransaction.model;
 
+import org.springframework.data.annotation.Id;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -16,6 +17,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 })
 @Document(collection = "accounts")
 public abstract class Account {
+    @Id
     String id;
     double balance;
     // Prevents infinite loop of child and parent data

@@ -24,21 +24,21 @@ public class CustomerRepository {
         users.add(u3);
 
         // Create customer 1 and accounts
-        Customer c1 = new Customer(String.valueOf(counter++), "Bob", u1.getUsername(), u1.getPassword(), new ArrayList<>());
+        Customer c1 = new Customer(counter++, "Bob", u1.getUsername(), u1.getPassword(), new ArrayList<>());
         ArrayList<Account> c1Accounts = new ArrayList<>();
         c1Accounts.add(createCheckingAccount(c1));
         c1Accounts.add(createSavingsAccount(c1));
         c1.setAccounts(c1Accounts);
 
         // Create customer 2 and accounts
-        Customer c2 = new Customer(String.valueOf(counter++), "Jeff", u2.getUsername(), u2.getPassword(), new ArrayList<>());
+        Customer c2 = new Customer(counter++, "Jeff", u2.getUsername(), u2.getPassword(), new ArrayList<>());
         ArrayList<Account> c2Accounts = new ArrayList<>();
         c2Accounts.add(createCheckingAccount(c1));
         c2Accounts.add(createSavingsAccount(c1));
         c2.setAccounts(c2Accounts);
 
         // Create customer 3 and accounts
-        Customer c3 = new Customer(String.valueOf(counter++), "John", u3.getUsername(), u3.getPassword(), new ArrayList<>());
+        Customer c3 = new Customer(counter++, "John", u3.getUsername(), u3.getPassword(), new ArrayList<>());
         ArrayList<Account> c3Accounts = new ArrayList<>();
         c3Accounts.add(createCheckingAccount(c1));
         c3Accounts.add(createSavingsAccount(c1));
@@ -67,7 +67,7 @@ public class CustomerRepository {
 
     public Customer getCustomerById(int customerId) {
         for (Customer customer : customers) {
-            if (Integer.parseInt(customer.getId()) == customerId) {
+            if (customer.getId() == customerId) {
                 return customer;
             }
         }
@@ -108,7 +108,7 @@ public class CustomerRepository {
 
     public void updateCustomer(Customer customer, int id){
         for (int i = 0; i < customers.size(); i++){
-            if (Integer.parseInt(customers.get(i).getId()) == id){
+            if (customers.get(i).getId() == id){
                 customers.set(i, customer);
                 break;
             }
@@ -117,7 +117,7 @@ public class CustomerRepository {
 
     public void deleteCustomer(int id){
         for (int i = 0; i < customers.size(); i++){
-            if (Integer.parseInt(customers.get(i).getId()) == id){
+            if (customers.get(i).getId() == id){
                 customers.remove(i);
                 break;
             }
