@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/customers")
@@ -33,14 +34,14 @@ public class TransactionController {
 
     // GetCustomerByID
     @GetMapping("id/{id}")
-    Customer getCustomerById(@PathVariable Integer id){
-        return customerRepository.getCustomerById(id);
+    Optional<Customer> getCustomerById(@PathVariable Integer id){
+        return customerRepo.findById(id);
     }
 
     // GetCustomerByName
     @GetMapping("name/{name}")
     Customer getCustomerByName(@PathVariable String name){
-        return customerRepository.getCustomerByName(name);
+        return customerRepo.findByNameIgnoreCase(name);
     }
 
     // GetPremiumCustomers
