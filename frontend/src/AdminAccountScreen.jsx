@@ -11,17 +11,16 @@ export default function AdminAccountScreen() {
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({ accountType: 'CheckingsAccount', balance: 0 });
 
-  // Creation state for a standalone new account mapping
+  // Creation state for a standalone new account mapping (Opening balance removed)
   const [newAccountForm, setNewAccountForm] = useState({
     customerId: '',
-    accountType: 'CheckingsAccount',
-    balance: 0
+    accountType: 'CheckingsAccount'
   });
 
   // GET ALL ACCOUNTS ON INITIAL LOAD
   const fetchAllAccounts = () => {
-    // 🟢 FIXED: Removed the stray '/api' prefix to perfectly match your Spring Mapping @GetMapping("/accounts")
-    fetch(`https://itransaction.onrender.com/accounts`)
+    // 🟢 UPDATED: Prefixed with /api/customers to match your class-level @RequestMapping
+    fetch(`https://itransaction.onrender.com/api/customers/accounts`)
       .then(res => {
         if (!res.ok) throw new Error("Could not parse ledger baseline data rows.");
         return res.json();
@@ -38,17 +37,18 @@ export default function AdminAccountScreen() {
   const handleSearch = (e) => {
     e.preventDefault();
 
-    if (!searchQuery.trim()) {
+    const query = searchQuery.trim();
+    if (!query) {
       alert("Please enter an Account ID or Customer Name.");
       return;
     }
 
-    const isNumeric = /^\d+$/.test(searchQuery.trim());
+    const isId = /^\d+$/.test(query) || /^[0-9a-fA-F]{24}$/.test(query);
 
-    // 🟢 FIXED: Standardized target strings to remove '/api' from production URIs
-    let endpoint = `https://itransaction.onrender.com/accounts/name/${searchQuery.trim()}`;
-    if (isNumeric) {
-      endpoint = `https://itransaction.onrender.com/accounts/id/${searchQuery.trim()}`;
+    // 🟢 UPDATED: Route configurations to match your exact controller setup
+    let endpoint = `https://itransaction.onrender.com/api/customers/accounts/name/${query}`;
+    if (isId) {
+      endpoint = `https://itransaction.onrender.com/api/customers/accounts/id/${query}`;
     }
 
     fetch(endpoint)
@@ -57,7 +57,6 @@ export default function AdminAccountScreen() {
         return res.json();
       })
       .then(data => {
-        // Normalize object response vs array response seamlessly
         const results = Array.isArray(data) ? data : [data];
         setAccounts(results);
 
@@ -70,11 +69,11 @@ export default function AdminAccountScreen() {
       })
       .catch(err => {
         console.error(err);
-        alert(`Search failed: No record matches "${searchQuery}"`);
+        alert(`Search failed: No record matches "${query}"`);
       });
   };
 
-  // STANDALONE ACCOUNT CREATION (Maps account directly to an existing Customer ID)
+  // STANDALONE ACCOUNT CREATION
   const handleCreateAccount = (e) => {
     e.preventDefault();
 
@@ -83,21 +82,21 @@ export default function AdminAccountScreen() {
       return;
     }
 
-    // 🟢 FIXED: Handled base route configuration to match @PostMapping("/id/{id}/accounts")
-    fetch(`https://itransaction.onrender.com/id/${newAccountForm.customerId}/accounts`, {
+    // 🟢 UPDATED: Points directly to your combined customer/account endpoint layout
+    fetch(`https://itransaction.onrender.com/api/customers/id/${newAccountForm.customerId}/accounts`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         accountType: newAccountForm.accountType,
-        balance: newAccountForm.balance
+        balance: 0
       })
     })
     .then(res => {
       if (!res.ok) throw new Error("Failed to provision account asset tracking.");
 
       alert("Account created and mapped successfully!");
-      setNewAccountForm({ customerId: '', accountType: 'CheckingsAccount', balance: 0 });
-      fetchAllAccounts(); // Refresh directory view
+      setNewAccountForm({ customerId: '', accountType: 'CheckingsAccount' });
+      fetchAllAccounts();
     })
     .catch(err => {
       console.error(err);
@@ -109,8 +108,8 @@ export default function AdminAccountScreen() {
   const handleUpdateAccount = (e) => {
     e.preventDefault();
 
-    // 🟢 FIXED: Removed '/api' to match @PutMapping("/accounts/{id}")
-    fetch(`https://itransaction.onrender.com/accounts/${selectedAccount.id}`, {
+    // 🟢 UPDATED: Prefixed path to safely map to your PutMapping
+    fetch(`https://itransaction.onrender.com/api/customers/accounts/${selectedAccount.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(editForm)
@@ -160,7 +159,7 @@ export default function AdminAccountScreen() {
               onClick={() => {
                 setSearchQuery('');
                 setSelectedAccount(null);
-                fetchAllAccounts(); // Reset button grabs directory listings again
+                fetchAllAccounts();
               }}
               style={{ background: '#ddd', border: 'none', padding: '8px 12px', borderRadius: '4px', cursor: 'pointer' }}
             >
@@ -195,7 +194,7 @@ export default function AdminAccountScreen() {
           <h4>➕ Provision Independent Asset Account</h4>
           <form onSubmit={handleCreateAccount} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <input
-              type="number"
+              type="text"
               placeholder="Target Customer ID"
               required
               value={newAccountForm.customerId}
@@ -210,14 +209,6 @@ export default function AdminAccountScreen() {
               <option value="CheckingsAccount">Checking Account</option>
               <option value="SavingsAccount">Savings Account</option>
             </select>
-            <input
-              type="number"
-              placeholder="Opening Balance ($)"
-              required
-              value={newAccountForm.balance || ''}
-              onChange={e => setNewAccountForm({...newAccountForm, balance: parseFloat(e.target.value) || 0})}
-              style={{padding: '8px'}}
-            />
             <button type="submit" style={{ backgroundColor: '#17a2b8', color: 'white', padding: '10px', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
               Authorize Asset Token
             </button>
