@@ -7,7 +7,8 @@ export default function AdminCustomerScreen() {
   useEffect(() => {
     // Queries the global customer directory endpoint
 //     fetch('http://localhost:8080/api/customers')
-fetch('https://itransaction-backend.onrender.com/api/customers')
+// fetch('https://itransaction-backend.onrender.com/api/customers')
+ fetch(`https://itransaction.onrender.com/api/customers`)
       .then(res => res.json())
       .then(data => setCustomers(data))
       .catch(err => console.error("Error fetching global customers:", err));

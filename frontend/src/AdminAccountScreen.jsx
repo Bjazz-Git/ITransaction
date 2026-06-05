@@ -7,7 +7,8 @@ export default function AdminAccountScreen() {
   useEffect(() => {
     // Queries your global accounts routing endpoint
 //     fetch('http://localhost:8080/api/customers/accounts')
-fetch('https://itransaction-backend.onrender.com/api/customers/accounts')
+// fetch('https://itransaction-backend.onrender.com/api/customers/accounts')
+ fetch(`https://itransaction.onrender.com/api/customers/accounts`)
       .then(res => res.json())
       .then(data => setAccounts(data))
       .catch(err => console.error("Error fetching global accounts ledger:", err));

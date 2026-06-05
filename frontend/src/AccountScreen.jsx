@@ -8,7 +8,8 @@ export default function AccountScreen({ user }) {
     if (user) {
       // Hits your specific endpoint: /api/customers/accounts/name/bobby
 //       fetch(`http://localhost:8080/api/customers/accounts/name/${user.username}`)
-fetch(`https://your-spring-backend.onrender.com/api/accounts/name/${user.username}`)
+// fetch(`https://your-spring-backend.onrender.com/api/accounts/name/${user.username}`)
+ fetch(`https://itransaction.onrender.com/api/accounts/name/${user.username}`)
         .then(res => res.json())
         .then(data => {
           setMyAccounts(data);
