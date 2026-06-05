@@ -15,7 +15,8 @@ export default function LoginScreen({ onLoginSuccess }) {
     }
 
     // Hit your Spring Boot Controller to verify credentials
-    fetch(`http://localhost:8080/api/customers/name/${username}`)
+//     fetch(`http://localhost:8080/api/customers/name/${username}`)
+        fetch(`https://your-spring-backend.onrender.com/api/customers/name/${username}`)
       .then((res) => {
         if (!res.ok) throw new Error('User not found');
         return res.json();
