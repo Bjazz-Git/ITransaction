@@ -9,8 +9,46 @@ export default function AdminCustomerScreen() {
   const [editForm, setEditForm] = useState({ name: '', username: '', password: '' });
   const [newCustomerForm, setNewCustomerForm] = useState({ name: '', username: '', password: '' });
 
-  // 🟢 FIX 1: Set initial state default to 'CheckingsAccount' to prevent raw unselected submissions
+  // Set initial state default to 'CheckingsAccount' to prevent raw unselected submissions
   const [newAccountForm, setNewAccountForm] = useState({ accountType: 'CheckingsAccount', balance: 0 });
+
+  // 1. Add this state near your other useState blocks at the top
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // 2. Add this handler function to execute the targeted search
+  const handleSearch = (e) => {
+    e.preventDefault();
+
+    if (!searchQuery.trim()) {
+      alert("Please enter a name or ID to search.");
+      return;
+    }
+
+    // Determine if the input is a number (ID) or letters (Name)
+    const isNumeric = /^\d+$/.test(searchQuery.trim());
+
+    let endpoint = `https://itransaction.onrender.com/api/customers/name/${searchQuery.trim()}`;
+    if (isNumeric) {
+      endpoint = `https://itransaction.onrender.com/api/customers/id/${searchQuery.trim()}`;
+    }
+
+    fetch(endpoint)
+      .then(res => {
+        if (!res.ok) {
+          throw new Error("Customer record not found.");
+        }
+        return res.json();
+      })
+      .then(foundCustomer => {
+        // Automatically open and focus the customer in your Profile Inspector
+        setSelectedCustomer(foundCustomer);
+        setIsEditing(false);
+      })
+      .catch(err => {
+        console.error(err);
+        alert(`Search failed: No record matches "${searchQuery}"`);
+      });
+  };
 
   // GET ALL CUSTOMERS
   useEffect(() => {
@@ -119,6 +157,30 @@ export default function AdminCustomerScreen() {
     setIsEditing(true);
   };
 
+{/* Add this block directly above your customers.map() directory loop */}
+<div style={{ marginBottom: '20px', padding: '15px', border: '1px solid #ffc107', borderRadius: '6px', backgroundColor: '#fff9e6' }}>
+  <form onSubmit={handleSearch} style={{ display: 'flex', gap: '10px' }}>
+    <input
+      type="text"
+      placeholder="Search by ID or Name..."
+      value={searchQuery}
+      onChange={e => setSearchQuery(e.target.value)}
+      style={{ padding: '8px', flex: 1, borderRadius: '4px', border: '1px solid #ccc' }}
+    />
+    <button type="submit" style={{ backgroundColor: '#ffc107', border: 'none', padding: '8px 15px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
+      🔍 Search
+    </button>
+    {/* Optional button to quickly reset your view to the full list */}
+    <button
+      type="button"
+      onClick={() => { setSearchQuery(''); setSelectedCustomer(null); }}
+      style={{ background: '#ddd', border: 'none', padding: '8px 12px', borderRadius: '4px', cursor: 'pointer' }}
+    >
+      Reset
+    </button>
+  </form>
+</div>
+
   return (
     <div style={{ display: 'flex', gap: '40px', marginTop: '20px', fontFamily: 'sans-serif' }}>
 
@@ -210,7 +272,6 @@ export default function AdminCustomerScreen() {
                   {/* 🟢 FIX 3: Changed option value target string to 'CheckingsAccount' */}
                   <option value="CheckingsAccount">Checking Account</option>
                   <option value="SavingsAccount">Savings Account</option>
-                  <option value="InvestmentAccount">Investment Account</option>
                 </select>
                 <input type="number" placeholder="Opening Deposit ($)" required value={newAccountForm.balance || ''} onChange={e => setNewAccountForm({...newAccountForm, balance: parseFloat(e.target.value) || 0})} style={{padding: '6px', width: '130px'}} />
                 <button type="submit" style={{ backgroundColor: '#ffc107', border: '1px solid #d39e00', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>Provision</button>
