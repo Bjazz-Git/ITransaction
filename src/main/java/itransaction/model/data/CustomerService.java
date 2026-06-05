@@ -49,25 +49,37 @@ public class CustomerService {
     // CreateCustomer
     public ResponseEntity<Customer> createCustomer(Customer customer){
         if (customer != null) {
+            // 1. Generate the sequential integer ID for the customer document
             customer.setId(sequenceGeneratorService.generateSequence(Customer.SEQUENCE_NAME));
 
-            // Save customer accounts to account repo
+            // 2. Process linked accounts safely if they are included in the payload
             if (customer.getAccounts() != null) {
-                // Store only accounts not present in the account repo in the list
+
+                // Assign fresh sequential String IDs to any brand-new accounts
+                for (Account account : customer.getAccounts()) {
+                    if (account.getId() == null || account.getId().trim().isEmpty()) {
+                        int nextSeq = sequenceGeneratorService.generateSequence("accounts_sequence");
+                        account.setId(String.valueOf(nextSeq));
+                    }
+                }
+
+                // Verify that no existing account IDs are being illicitly reassigned
                 List<Account> customerAccounts = verifyAccounts(customer.getAccounts());
 
-                // Adds new accounts to account repo
+                // Persist the newly IDs into the account collection
                 for (Account account : customerAccounts) {
                     accountRepo.save(account);
                 }
 
-                // Stores new accounts into customer
+                // Bind the verified collection list back to the customer model mapping
                 customer.setAccounts(customerAccounts);
             }
+
+            // 3. Save everything to the customer collection and return the 201 status
             Customer savedCustomer = customerRepo.save(customer);
             return ResponseEntity.status(HttpStatus.CREATED).body(savedCustomer);
         }
-        else{
+        else {
             return ResponseEntity.badRequest().build();
         }
     }
@@ -109,7 +121,9 @@ public class CustomerService {
         // Deletes accounts associated with that customer
         if (customer.getAccounts() != null) {
             for (Account account : customer.getAccounts()) {
-                accountRepo.deleteById(account.getId());
+                if (account != null && account.getId() != null) {
+                    accountRepo.deleteById(account.getId());
+                }
             }
         }
 
@@ -143,9 +157,15 @@ public class CustomerService {
     private List<Account> verifyAccounts(List<Account> accounts){
         List<Account> customerAccounts = new ArrayList<>();
 
-        for (Account account : accounts){
-            // Throws an error if a duplicate account was added to customer
-            if (accountRepo.findById(account.getId()).isPresent()){
+        for (Account account : accounts) {
+            // Skip validation if the account ID is brand new (null or empty)
+            if (account.getId() == null || account.getId().trim().isEmpty()) {
+                customerAccounts.add(account);
+                continue; // Keep moving to the next account safely
+            }
+
+            // Only check for duplicates if an actual ID was provided by the frontend
+            if (accountRepo.findById(account.getId()).isPresent()) {
                 throw new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
                         "Account ID " + account.getId() + " already exists and cannot be reassigned!");

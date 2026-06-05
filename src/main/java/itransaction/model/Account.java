@@ -25,6 +25,7 @@ public abstract class Account {
     @Id
     String id;
     double balance;
+    public static final String SEQUENECE_NAME = "accounts_sequence";
 
 //    @Indexed(unique = true)
 //    private Integer customerId;
@@ -50,6 +51,8 @@ public abstract class Account {
     public abstract double getBalance();
 
     public abstract String getId();
+
+    public abstract void setId(String id);
 
     abstract boolean overdraftLimit(double amount);
 

@@ -76,6 +76,11 @@ public class CheckingsAccount extends Account{
     }
 
     @Override
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    @Override
     boolean overdraftLimit(double amount) {
         return balance - amount < overdraftLimit;
     }
