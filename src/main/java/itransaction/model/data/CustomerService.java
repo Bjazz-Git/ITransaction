@@ -85,8 +85,8 @@ public class CustomerService {
                     //TODO Could cause new accounts to be created
                     accountRepo.save(account);
                 }
-                customerRepo.save(customer);
             }
+            customerRepo.save(customer);
         }
 
         else{

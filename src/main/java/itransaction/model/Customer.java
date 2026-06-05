@@ -19,7 +19,7 @@ public class Customer extends User {
     private String mongoId = new ObjectId().toString();
     private String name;
     @DocumentReference
-    private List<Account> accounts;
+    private List<Account> accounts = new ArrayList<>();
     // For ID incrementation
     public static final String SEQUENCE_NAME = "customer_sequence";
 
@@ -28,6 +28,10 @@ public class Customer extends User {
         this.id = id;
         this.name = name;
         this.accounts = accounts;
+    }
+
+    public Customer(){
+
     }
 
     public int getId() {
