@@ -4,7 +4,7 @@ export default function AdminAccountScreen() {
   const [accounts, setAccounts] = useState([]);
   const [selectedAccount, setSelectedAccount] = useState(null);
 
-  // Search states
+  // Search/Filter matching state
   const [searchQuery, setSearchQuery] = useState('');
 
   // Editing state for updating balances/types
@@ -20,8 +20,12 @@ export default function AdminAccountScreen() {
 
   // GET ALL ACCOUNTS ON INITIAL LOAD
   const fetchAllAccounts = () => {
-    fetch(`https://itransaction.onrender.com/api/accounts`)
-      .then(res => res.json())
+    // 🟢 FIXED: Removed the stray '/api' prefix to perfectly match your Spring Mapping @GetMapping("/accounts")
+    fetch(`https://itransaction.onrender.com/accounts`)
+      .then(res => {
+        if (!res.ok) throw new Error("Could not parse ledger baseline data rows.");
+        return res.json();
+      })
       .then(data => setAccounts(data))
       .catch(err => console.error("Error fetching institutional ledgers:", err));
   };
@@ -40,10 +44,11 @@ export default function AdminAccountScreen() {
     }
 
     const isNumeric = /^\d+$/.test(searchQuery.trim());
-    let endpoint = `https://itransaction.onrender.com/api/accounts/search?name=${searchQuery.trim()}`;
 
+    // 🟢 FIXED: Standardized target strings to remove '/api' from production URIs
+    let endpoint = `https://itransaction.onrender.com/accounts/name/${searchQuery.trim()}`;
     if (isNumeric) {
-      endpoint = `https://itransaction.onrender.com/api/accounts/${searchQuery.trim()}`;
+      endpoint = `https://itransaction.onrender.com/accounts/id/${searchQuery.trim()}`;
     }
 
     fetch(endpoint)
@@ -52,9 +57,10 @@ export default function AdminAccountScreen() {
         return res.json();
       })
       .then(data => {
-        // Handle if backend returns a single object (for ID) vs an array (for Name)
+        // Normalize object response vs array response seamlessly
         const results = Array.isArray(data) ? data : [data];
         setAccounts(results);
+
         if (results.length === 1) {
           setSelectedAccount(results[0]);
         } else {
@@ -64,7 +70,7 @@ export default function AdminAccountScreen() {
       })
       .catch(err => {
         console.error(err);
-        alert(`Search failed: ${err.message}`);
+        alert(`Search failed: No record matches "${searchQuery}"`);
       });
   };
 
@@ -77,7 +83,8 @@ export default function AdminAccountScreen() {
       return;
     }
 
-    fetch(`https://itransaction.onrender.com/api/customers/id/${newAccountForm.customerId}/accounts`, {
+    // 🟢 FIXED: Handled base route configuration to match @PostMapping("/id/{id}/accounts")
+    fetch(`https://itransaction.onrender.com/id/${newAccountForm.customerId}/accounts`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -87,6 +94,7 @@ export default function AdminAccountScreen() {
     })
     .then(res => {
       if (!res.ok) throw new Error("Failed to provision account asset tracking.");
+
       alert("Account created and mapped successfully!");
       setNewAccountForm({ customerId: '', accountType: 'CheckingsAccount', balance: 0 });
       fetchAllAccounts(); // Refresh directory view
@@ -101,20 +109,20 @@ export default function AdminAccountScreen() {
   const handleUpdateAccount = (e) => {
     e.preventDefault();
 
-    fetch(`https://itransaction.onrender.com/api/accounts/${selectedAccount.id}`, {
+    // 🟢 FIXED: Removed '/api' to match @PutMapping("/accounts/{id}")
+    fetch(`https://itransaction.onrender.com/accounts/${selectedAccount.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(editForm)
     })
     .then(res => {
       if (!res.ok) throw new Error("Failed to write overwrite adjustments.");
-      return res.json();
-    })
-    .then(updatedAccount => {
-      setAccounts(accounts.map(acc => acc.id === selectedAccount.id ? updatedAccount : acc));
-      setSelectedAccount(updatedAccount);
-      setIsEditing(false);
+
       alert("Ledger records successfully synchronized.");
+      const updated = { ...selectedAccount, ...editForm };
+      setAccounts(accounts.map(acc => acc.id === selectedAccount.id ? updated : acc));
+      setSelectedAccount(updated);
+      setIsEditing(false);
     })
     .catch(err => console.error(err));
   };
@@ -152,7 +160,7 @@ export default function AdminAccountScreen() {
               onClick={() => {
                 setSearchQuery('');
                 setSelectedAccount(null);
-                fetchAllAccounts();
+                fetchAllAccounts(); // Reset button grabs directory listings again
               }}
               style={{ background: '#ddd', border: 'none', padding: '8px 12px', borderRadius: '4px', cursor: 'pointer' }}
             >
