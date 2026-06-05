@@ -20,30 +20,51 @@ export default function AdminCustomerScreen() {
       .catch(err => console.error("Error fetching global customers:", err));
   }, []);
 
-  // CREATE A NEW CUSTOMER
-  const handleCreateCustomer = (e) => {
-    e.preventDefault();
-    fetch(`https://itransaction.onrender.com/api/customers`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newCustomerForm)
-    })
-    .then(res => res.json())
-    .then(newCustomer => {
-      setCustomers([...customers, newCustomer]);
-      setNewCustomerForm({ name: '', username: '', password: '' });
-      alert("Customer created successfully!");
-    })
-    .catch(err => console.error(err));
-  };
+// CREATE A NEW CUSTOMER
+const handleCreateCustomer = (e) => {
+  e.preventDefault();
+
+  // 🟢 Pass the form data exactly as the user typed it. Backend assigns the sequential ID.
+  fetch(`https://itransaction.onrender.com/api/customers`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(newCustomerForm)
+  })
+  .then(res => {
+    if (!res.ok) {
+      throw new Error("Server error during customer onboarding");
+    }
+    return res.json();
+  })
+  .then(newCustomer => {
+    // Append the newly created customer (which now includes its backend-assigned ID) to your UI state
+    setCustomers([...customers, newCustomer]);
+    // Reset form inputs
+    setNewCustomerForm({ name: '', username: '', password: '' });
+    alert("Customer created successfully!");
+  })
+  .catch(err => {
+    console.error("Error creating customer:", err);
+    alert("Onboarding failed. Check backend logs for sequence tracking sync.");
+  });
+};
 
   // UPDATE AN EXISTING CUSTOMER
   const handleUpdateCustomer = (e) => {
     e.preventDefault();
+
+    // Build a complete payload containing the ID to prevent Spring Boot deserialization errors
+    const updatedPayload = {
+      id: selectedCustomer.id,
+      name: editForm.name,
+      username: editForm.username,
+      password: editForm.password
+    };
+
     fetch(`https://itransaction.onrender.com/api/customers/${selectedCustomer.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(editForm)
+      body: JSON.stringify(updatedPayload) // 🟢 Fix: Send the complete object instead of just editForm
     })
     .then(() => {
       // Create the updated customer object for local state sync

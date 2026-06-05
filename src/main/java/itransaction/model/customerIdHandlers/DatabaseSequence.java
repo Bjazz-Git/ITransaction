@@ -1,0 +1,4 @@
+package itransaction.model.customerIdHandlers;
+
+public class DatabaseSequence {
+}
