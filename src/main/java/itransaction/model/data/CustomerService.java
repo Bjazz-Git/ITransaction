@@ -48,27 +48,28 @@ public class CustomerService {
 
     // CreateCustomer
     public ResponseEntity<Customer> createCustomer(Customer customer){
-        if (customer != null){
+        if (customer != null) {
             customer.setId(sequenceGeneratorService.generateSequence(Customer.SEQUENCE_NAME));
-        }
 
-        // Save customer accounts to account repo
-        if (customer.getAccounts() != null) {
-            // Store only accounts not present in the account repo in the list
-            List<Account> customerAccounts = verifyAccounts(customer.getAccounts());
+            // Save customer accounts to account repo
+            if (customer.getAccounts() != null) {
+                // Store only accounts not present in the account repo in the list
+                List<Account> customerAccounts = verifyAccounts(customer.getAccounts());
 
-            // Adds new accounts to account repo
-            for (Account account : customerAccounts) {
-                accountRepo.save(account);
+                // Adds new accounts to account repo
+                for (Account account : customerAccounts) {
+                    accountRepo.save(account);
+                }
+
+                // Stores new accounts into customer
+                customer.setAccounts(customerAccounts);
             }
-
-            // Stores new accounts into customer
-            customer.setAccounts(customerAccounts);
+            Customer savedCustomer = customerRepo.save(customer);
+            return ResponseEntity.ok(savedCustomer);
         }
-
-        Customer savedCustomer = customerRepo.save(customer);
-
-        return ResponseEntity.ok(savedCustomer);
+        else{
+            return ResponseEntity.badRequest().build();
+        }
     }
 
 
@@ -79,11 +80,13 @@ public class CustomerService {
 
         // If the id wasn't changed during the update, update the customer and their accounts
         if (id == customer.getId()) {
-            for (Account account : customer.getAccounts()) {
-                //TODO Could cause new accounts to be created
-                accountRepo.save(account);
+            if (customer.getAccounts() != null) {
+                for (Account account : customer.getAccounts()) {
+                    //TODO Could cause new accounts to be created
+                    accountRepo.save(account);
+                }
+                customerRepo.save(customer);
             }
-            customerRepo.save(customer);
         }
 
         else{
@@ -99,8 +102,10 @@ public class CustomerService {
         Customer customer = findById(id);
 
         // Deletes accounts associated with that customer
-        for (Account account : customer.getAccounts()){
-            accountRepo.deleteById(account.getId());
+        if (customer.getAccounts() != null) {
+            for (Account account : customer.getAccounts()) {
+                accountRepo.deleteById(account.getId());
+            }
         }
 
         customerRepo.deleteById(id);
