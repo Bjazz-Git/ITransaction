@@ -47,9 +47,9 @@ public class TransactionController {
     }
 
     // GetPremiumCustomers
-    @GetMapping("/premium")
-    List<Customer> getPremiumCustomers(){
-        return customerService.getAllPremiumCustomers(premiumThreshold);
+    @GetMapping("/premium/{premium}")
+    public List<Customer> getPremiumCustomers(@PathVariable double premium){
+        return customerService.getAllPremiumCustomers(premium);
     }
 
     // CreateCustomer

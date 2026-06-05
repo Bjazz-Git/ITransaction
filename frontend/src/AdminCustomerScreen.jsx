@@ -15,6 +15,30 @@ export default function AdminCustomerScreen() {
   // 1. Search text tracking state
   const [searchQuery, setSearchQuery] = useState('');
 
+  // 1. Add this near your other useState hooks at the top
+  const [premiumThreshold, setPremiumThreshold] = useState(10000);
+
+  // 2. Add this handler function to call your premium filtering endpoint
+  const handleFetchPremiumCustomers = () => {
+    fetch(`https://itransaction.onrender.com/api/customers/premium/${premiumThreshold}`)
+      .then(res => {
+        if (!res.ok) {
+          throw new Error("Failed to fetch premium customer records.");
+        }
+        return res.json();
+      })
+      .then(premiumData => {
+        // Just like search, overwrite the array state so ONLY premium accounts show up!
+        setCustomers(premiumData);
+        setSelectedCustomer(null); // Clear the inspector view
+        setIsEditing(false);
+      })
+      .catch(err => {
+        console.error("Error filtering premium tiers:", err);
+        alert("Could not load premium tiers. Ensure your controller endpoint is mapped.");
+      });
+  };
+
   // 2. Handler function to execute the targeted search query
 const handleSearch = (e) => {
     e.preventDefault();
@@ -50,6 +74,34 @@ const handleSearch = (e) => {
         console.error(err);
         alert(`Search failed: No record matches "${searchQuery}"`);
       });
+  {/* Add this inside your search container box, right below your current search form */}
+  <hr style={{ border: '0', borderTop: '1px dashed #ffc107', margin: '15px 0' }} />
+
+  <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+    <label style={{ fontSize: '14px', fontWeight: 'bold' }}>Min Total Assets ($):</label>
+    <input
+      type="number"
+      value={premiumThreshold}
+      onChange={e => setPremiumThreshold(parseFloat(e.target.value) || 0)}
+      style={{ padding: '6px', width: '120px', borderRadius: '4px', border: '1px solid #ccc' }}
+    />
+    <button
+      type="button"
+      onClick={handleFetchPremiumCustomers}
+      style={{
+        backgroundColor: '#28a745',
+        color: 'white',
+        border: 'none',
+        padding: '8px 15px',
+        borderRadius: '4px',
+        cursor: 'pointer',
+        fontWeight: 'bold',
+        flex: 1
+      }}
+    >
+      💎 Filter Premium Tiers
+    </button>
+  </div>
   };
 
   // GET ALL CUSTOMERS
