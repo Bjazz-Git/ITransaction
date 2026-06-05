@@ -104,7 +104,7 @@ public class TransactionController {
 
     // UpdateAccount
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PutMapping("/id/{id}/accounts")
+    @PutMapping("/accounts/{id}")
     void updateAccount(@PathVariable String id, @RequestBody Account account){
         accountService.updateAccount(id, account);
     }
