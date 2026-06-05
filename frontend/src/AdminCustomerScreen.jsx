@@ -24,7 +24,7 @@ export default function AdminCustomerScreen() {
 const handleCreateCustomer = (e) => {
   e.preventDefault();
 
-  // 🟢 Pass the form data exactly as the user typed it. Backend assigns the sequential ID.
+  //  Pass the form data exactly as the user typed it. Backend assigns the sequential ID.
   fetch(`https://itransaction.onrender.com/api/customers`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
