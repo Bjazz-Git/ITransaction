@@ -12,13 +12,13 @@ export default function AdminCustomerScreen() {
   // Set initial state default to 'CheckingsAccount' to prevent raw unselected submissions
   const [newAccountForm, setNewAccountForm] = useState({ accountType: 'CheckingsAccount', balance: 0 });
 
-  // 1. Search text tracking state
+  // Search text tracking state
   const [searchQuery, setSearchQuery] = useState('');
 
-  // 1. Add this near your other useState hooks at the top
+  // Premium tier threshold baseline state
   const [premiumThreshold, setPremiumThreshold] = useState(10000);
 
-  // 2. Add this handler function to call your premium filtering endpoint
+  // Handler function to call your premium filtering endpoint
   const handleFetchPremiumCustomers = () => {
     fetch(`https://itransaction.onrender.com/api/customers/premium/${premiumThreshold}`)
       .then(res => {
@@ -39,8 +39,8 @@ export default function AdminCustomerScreen() {
       });
   };
 
-  // 2. Handler function to execute the targeted search query
-const handleSearch = (e) => {
+  // Handler function to execute the targeted search query
+  const handleSearch = (e) => {
     e.preventDefault();
 
     if (!searchQuery.trim()) {
@@ -63,10 +63,10 @@ const handleSearch = (e) => {
         return res.json();
       })
       .then(foundCustomer => {
-        // 🟢 1. Overwrite the array state so ONLY this single customer is rendered on the left
+        // Overwrite the array state so ONLY this single customer is rendered on the left
         setCustomers([foundCustomer]);
 
-        // 2. Keep it opened in your inspector on the right
+        // Keep it opened in your inspector on the right
         setSelectedCustomer(foundCustomer);
         setIsEditing(false);
       })
@@ -74,35 +74,7 @@ const handleSearch = (e) => {
         console.error(err);
         alert(`Search failed: No record matches "${searchQuery}"`);
       });
-  {/* Add this inside your search container box, right below your current search form */}
-  <hr style={{ border: '0', borderTop: '1px dashed #ffc107', margin: '15px 0' }} />
-
-  <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-    <label style={{ fontSize: '14px', fontWeight: 'bold' }}>Min Total Assets ($):</label>
-    <input
-      type="number"
-      value={premiumThreshold}
-      onChange={e => setPremiumThreshold(parseFloat(e.target.value) || 0)}
-      style={{ padding: '6px', width: '120px', borderRadius: '4px', border: '1px solid #ccc' }}
-    />
-    <button
-      type="button"
-      onClick={handleFetchPremiumCustomers}
-      style={{
-        backgroundColor: '#28a745',
-        color: 'white',
-        border: 'none',
-        padding: '8px 15px',
-        borderRadius: '4px',
-        cursor: 'pointer',
-        fontWeight: 'bold',
-        flex: 1
-      }}
-    >
-      💎 Filter Premium Tiers
-    </button>
-  </div>
-  };
+  }; // 🟢 FIXED: Function now closes completely and cleanly here.
 
   // GET ALL CUSTOMERS
   useEffect(() => {
@@ -213,12 +185,14 @@ const handleSearch = (e) => {
   return (
     <div style={{ display: 'flex', gap: '40px', marginTop: '20px', fontFamily: 'sans-serif' }}>
 
-      {/* LEFT SIDE: Directory, Search, and Creation Form */}
+      {/* LEFT SIDE: Directory, Search, Filters, and Creation Form */}
       <div style={{ flex: 1 }}>
         <h3>Global Customer Directory (Admin View)</h3>
 
-        {/* 🟢 FIXED: The Search Bar HTML is now safely inside the return rendering footprint */}
+        {/* Global Directory Filters Card */}
         <div style={{ marginBottom: '20px', padding: '15px', border: '1px solid #ffc107', borderRadius: '6px', backgroundColor: '#fff9e6' }}>
+
+          {/* Main ID/Name Query Row */}
           <form onSubmit={handleSearch} style={{ display: 'flex', gap: '10px' }}>
             <input
               type="text"
@@ -230,13 +204,11 @@ const handleSearch = (e) => {
             <button type="submit" style={{ backgroundColor: '#ffc107', border: 'none', padding: '8px 15px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
               🔍 Search
             </button>
-            {/* Update your search form's Reset button to re-fetch the complete directory */}
             <button
               type="button"
               onClick={() => {
                 setSearchQuery('');
                 setSelectedCustomer(null);
-                // 🟢 Re-fetch the entire directory to unhide all profiles
                 fetch(`https://itransaction.onrender.com/api/customers`)
                   .then(res => res.json())
                   .then(data => setCustomers(data))
@@ -247,8 +219,38 @@ const handleSearch = (e) => {
               Reset
             </button>
           </form>
+
+          {/* 🟢 FIXED: The premium tracking interface row is now correctly aligned inside the UI footprint */}
+          <hr style={{ border: '0', borderTop: '1px dashed #ffc107', margin: '15px 0' }} />
+
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+            <label style={{ fontSize: '14px', fontWeight: 'bold' }}>Min Total Assets ($):</label>
+            <input
+              type="number"
+              value={premiumThreshold}
+              onChange={e => setPremiumThreshold(parseFloat(e.target.value) || 0)}
+              style={{ padding: '6px', width: '120px', borderRadius: '4px', border: '1px solid #ccc' }}
+            />
+            <button
+              type="button"
+              onClick={handleFetchPremiumCustomers}
+              style={{
+                backgroundColor: '#28a745',
+                color: 'white',
+                border: 'none',
+                padding: '8px 15px',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+                flex: 1
+              }}
+            >
+              💎 Filter Premium Tiers
+            </button>
+          </div>
         </div>
 
+        {/* Directory Map List */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '30px' }}>
           {customers.map(customer => (
             <button
