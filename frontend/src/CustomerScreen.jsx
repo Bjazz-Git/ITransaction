@@ -1,16 +1,60 @@
 import { useEffect, useState } from 'react';
 
 export default function CustomerScreen({ user }) {
+  const [accounts, setAccounts] = useState([]);
+  const [loadingAccounts, setLoadingAccounts] = useState(true);
+
+  useEffect(() => {
+    if (user && user.username) {
+      setLoadingAccounts(true);
+      fetch(`https://itransaction.onrender.com/api/accounts/name/${user.username}`)
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("=== CUSTOMER ACCOUNT DATA ===", data);
+          setAccounts(data);
+          setLoadingAccounts(false);
+        })
+        .catch((err) => {
+          console.error("Error fetching accounts:", err);
+          setLoadingAccounts(false);
+        });
+    }
+  }, [user]);
+
   if (!user) return <p>Loading profile...</p>;
 
   return (
-    <div style={{ maxWidth: '500px', padding: '20px', border: '1px solid #ccc', borderRadius: '8px', backgroundColor: '#f9f9f9' }}>
-      <h3>🔒 Your Personal Security Profile</h3>
-      <p><strong>Customer ID:</strong> {user.id}</p>
-      <p><strong>Full Name:</strong> {user.name}</p>
-      <p><strong>Username:</strong> {user.username}</p>
-      <p><strong>Password:</strong> <code style={{ color: 'red' }}>{user.password}</code></p>
-      <small style={{ color: 'gray' }}>If any of this data is incorrect, please contact an administrator.</small>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', maxWidth: '500px' }}>
+      {/* Profile Card */}
+      <div style={{ padding: '20px', border: '1px solid #ccc', borderRadius: '8px', backgroundColor: '#f9f9f9' }}>
+        <h3>🔒 Your Personal Security Profile</h3>
+        <p><strong>Customer ID:</strong> {user.id}</p>
+        <p><strong>Full Name:</strong> {user.name}</p>
+        <p><strong>Username:</strong> {user.username}</p>
+        <p><strong>Password:</strong> <code style={{ color: 'red' }}>{user.password}</code></p>
+        <small style={{ color: 'gray' }}>If any of this data is incorrect, please contact an administrator.</small>
+      </div>
+
+      {/* 🟢 3. Accounts Card Display */}
+      <div style={{ padding: '20px', border: '1px solid #ccc', borderRadius: '8px', backgroundColor: '#fff' }}>
+        <h3>💳 Your Financial Accounts</h3>
+
+        {loadingAccounts ? (
+          <p>Loading accounts...</p>
+        ) : accounts.length === 0 ? (
+          <p style={{ color: 'gray', fontStyle: 'italic' }}>No active accounts found for this user.</p>
+        ) : (
+          <ul style={{ paddingLeft: '20px' }}>
+            {accounts.map((account) => (
+              <li key={account.id} style={{ marginBottom: '10px' }}>
+                <strong>{account.accountType || "Account"}:</strong> ${account.balance?.toFixed(2)}
+                <br />
+                <small style={{ color: 'gray' }}>Account #: {account.accountNumber || account.id}</small>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }
