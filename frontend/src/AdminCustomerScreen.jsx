@@ -9,8 +9,8 @@ export default function AdminCustomerScreen() {
   const [editForm, setEditForm] = useState({ name: '', username: '', password: '' });
   const [newCustomerForm, setNewCustomerForm] = useState({ name: '', username: '', password: '' });
 
-  // Form states for creating a new account for the selected customer
-  const [newAccountForm, setNewAccountForm] = useState({ accountType: 'CheckingAccount', balance: 0 });
+  // 🟢 FIX 1: Set initial state default to 'CheckingsAccount' to prevent raw unselected submissions
+  const [newAccountForm, setNewAccountForm] = useState({ accountType: 'CheckingsAccount', balance: 0 });
 
   // GET ALL CUSTOMERS
   useEffect(() => {
@@ -20,40 +20,36 @@ export default function AdminCustomerScreen() {
       .catch(err => console.error("Error fetching global customers:", err));
   }, []);
 
-// CREATE A NEW CUSTOMER
-const handleCreateCustomer = (e) => {
-  e.preventDefault();
+  // CREATE A NEW CUSTOMER
+  const handleCreateCustomer = (e) => {
+    e.preventDefault();
 
-  //  Pass the form data exactly as the user typed it. Backend assigns the sequential ID.
-  fetch(`https://itransaction.onrender.com/api/customers`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(newCustomerForm)
-  })
-  .then(res => {
-    if (!res.ok) {
-      throw new Error("Server error during customer onboarding");
-    }
-    return res.json();
-  })
-  .then(newCustomer => {
-    // Append the newly created customer (which now includes its backend-assigned ID) to your UI state
-    setCustomers([...customers, newCustomer]);
-    // Reset form inputs
-    setNewCustomerForm({ name: '', username: '', password: '' });
-    alert("Customer created successfully!");
-  })
-  .catch(err => {
-    console.error("Error creating customer:", err);
-    alert("Onboarding failed. Check backend logs for sequence tracking sync.");
-  });
-};
+    fetch(`https://itransaction.onrender.com/api/customers`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newCustomerForm)
+    })
+    .then(res => {
+      if (!res.ok) {
+        throw new Error("Server error during customer onboarding");
+      }
+      return res.json();
+    })
+    .then(newCustomer => {
+      setCustomers([...customers, newCustomer]);
+      setNewCustomerForm({ name: '', username: '', password: '' });
+      alert("Customer created successfully!");
+    })
+    .catch(err => {
+      console.error("Error creating customer:", err);
+      alert("Onboarding failed. Check backend logs for sequence tracking sync.");
+    });
+  };
 
   // UPDATE AN EXISTING CUSTOMER
   const handleUpdateCustomer = (e) => {
     e.preventDefault();
 
-    // Build a complete payload containing the ID to prevent Spring Boot deserialization errors
     const updatedPayload = {
       id: selectedCustomer.id,
       name: editForm.name,
@@ -64,10 +60,9 @@ const handleCreateCustomer = (e) => {
     fetch(`https://itransaction.onrender.com/api/customers/${selectedCustomer.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(updatedPayload) // 🟢 Fix: Send the complete object instead of just editForm
+      body: JSON.stringify(updatedPayload)
     })
     .then(() => {
-      // Create the updated customer object for local state sync
       const updated = { ...selectedCustomer, ...editForm };
       setCustomers(customers.map(c => c.id === selectedCustomer.id ? updated : c));
       setSelectedCustomer(updated);
@@ -102,7 +97,6 @@ const handleCreateCustomer = (e) => {
     })
     .then(() => {
       alert("Account assigned successfully! Refreshing database view...");
-      // Re-fetch global customers list to update nested accounts array visually
       return fetch(`https://itransaction.onrender.com/api/customers`);
     })
     .then(res => res.json())
@@ -110,7 +104,8 @@ const handleCreateCustomer = (e) => {
       setCustomers(data);
       const freshlyUpdatedCustomer = data.find(c => c.id === selectedCustomer.id);
       setSelectedCustomer(freshlyUpdatedCustomer);
-      setNewAccountForm({ accountType: 'CheckingAccount', balance: 0 });
+      // 🟢 FIX 2: Reset form state default back to 'CheckingsAccount'
+      setNewAccountForm({ accountType: 'CheckingsAccount', balance: 0 });
     })
     .catch(err => console.error(err));
   };
@@ -170,7 +165,6 @@ const handleCreateCustomer = (e) => {
         {selectedCustomer ? (
           <div>
             {!isEditing ? (
-              /* Static Audit Detail Block View */
               <div>
                 <p><strong>Database ID Field:</strong> {selectedCustomer.id}</p>
                 <p><strong>Legal Full Name:</strong> {selectedCustomer.name}</p>
@@ -181,7 +175,6 @@ const handleCreateCustomer = (e) => {
                 <button onClick={() => handleDeleteCustomer(selectedCustomer.id)} style={{ backgroundColor: '#dc3545', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer' }}>🚨 Delete Profile</button>
               </div>
             ) : (
-              /* Live Record Modification Input View */
               <form onSubmit={handleUpdateCustomer} style={{ display: 'flex', flexDirection: 'column', gap: '10px', margin: '15px 0' }}>
                 <h4>Modify Profile Properties</h4>
                 <label>Legal Name: <input type="text" value={editForm.name} onChange={e => setEditForm({...editForm, name: e.target.value})} style={{width: '100%', padding: '6px'}} /></label>
@@ -214,7 +207,8 @@ const handleCreateCustomer = (e) => {
               <h5>💼 Authorize New Asset Allocation</h5>
               <form onSubmit={handleCreateAccount} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                 <select value={newAccountForm.accountType} onChange={e => setNewAccountForm({...newAccountForm, accountType: e.target.value})} style={{padding: '6px'}}>
-                  <option value="CheckingAccount">Checking Account</option>
+                  {/* 🟢 FIX 3: Changed option value target string to 'CheckingsAccount' */}
+                  <option value="CheckingsAccount">Checking Account</option>
                   <option value="SavingsAccount">Savings Account</option>
                   <option value="InvestmentAccount">Investment Account</option>
                 </select>
