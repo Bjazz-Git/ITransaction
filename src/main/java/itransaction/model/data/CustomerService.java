@@ -65,7 +65,7 @@ public class CustomerService {
                 customer.setAccounts(customerAccounts);
             }
             Customer savedCustomer = customerRepo.save(customer);
-            return ResponseEntity.ok(savedCustomer);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedCustomer);
         }
         else{
             return ResponseEntity.badRequest().build();
@@ -76,19 +76,24 @@ public class CustomerService {
     // UpdateCustomer
     public void updateCustomer(Customer customer, int id){
         // Ensures that the account doesn't have a new id
-        findById(id);
+        Customer existingCustomer = findById(id);
 
         // If the id wasn't changed during the update, update the customer and their accounts
-        if (id == customer.getId()) {
+        if (customer.getId() == 0 || id == customer.getId()) {
+            existingCustomer.setName(customer.getName());
+            existingCustomer.setUsername(customer.getUsername());
+            existingCustomer.setPassword(customer.getPassword());
+
             if (customer.getAccounts() != null) {
                 for (Account account : customer.getAccounts()) {
                     //TODO Could cause new accounts to be created
                     accountRepo.save(account);
                 }
+                existingCustomer.setAccounts(customer.getAccounts());
             }
-            customerRepo.save(customer);
-        }
 
+           customerRepo.save(existingCustomer);
+        }
         else{
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
