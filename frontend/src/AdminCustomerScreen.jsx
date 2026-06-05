@@ -12,10 +12,10 @@ export default function AdminCustomerScreen() {
   // Set initial state default to 'CheckingsAccount' to prevent raw unselected submissions
   const [newAccountForm, setNewAccountForm] = useState({ accountType: 'CheckingsAccount', balance: 0 });
 
-  // 1. Add this state near your other useState blocks at the top
+  // 1. Search text tracking state
   const [searchQuery, setSearchQuery] = useState('');
 
-  // 2. Add this handler function to execute the targeted search
+  // 2. Handler function to execute the targeted search query
   const handleSearch = (e) => {
     e.preventDefault();
 
@@ -24,7 +24,6 @@ export default function AdminCustomerScreen() {
       return;
     }
 
-    // Determine if the input is a number (ID) or letters (Name)
     const isNumeric = /^\d+$/.test(searchQuery.trim());
 
     let endpoint = `https://itransaction.onrender.com/api/customers/name/${searchQuery.trim()}`;
@@ -40,7 +39,6 @@ export default function AdminCustomerScreen() {
         return res.json();
       })
       .then(foundCustomer => {
-        // Automatically open and focus the customer in your Profile Inspector
         setSelectedCustomer(foundCustomer);
         setIsEditing(false);
       })
@@ -142,7 +140,6 @@ export default function AdminCustomerScreen() {
       setCustomers(data);
       const freshlyUpdatedCustomer = data.find(c => c.id === selectedCustomer.id);
       setSelectedCustomer(freshlyUpdatedCustomer);
-      // 🟢 FIX 2: Reset form state default back to 'CheckingsAccount'
       setNewAccountForm({ accountType: 'CheckingsAccount', balance: 0 });
     })
     .catch(err => console.error(err));
@@ -157,36 +154,36 @@ export default function AdminCustomerScreen() {
     setIsEditing(true);
   };
 
-{/* Add this block directly above your customers.map() directory loop */}
-<div style={{ marginBottom: '20px', padding: '15px', border: '1px solid #ffc107', borderRadius: '6px', backgroundColor: '#fff9e6' }}>
-  <form onSubmit={handleSearch} style={{ display: 'flex', gap: '10px' }}>
-    <input
-      type="text"
-      placeholder="Search by ID or Name..."
-      value={searchQuery}
-      onChange={e => setSearchQuery(e.target.value)}
-      style={{ padding: '8px', flex: 1, borderRadius: '4px', border: '1px solid #ccc' }}
-    />
-    <button type="submit" style={{ backgroundColor: '#ffc107', border: 'none', padding: '8px 15px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
-      🔍 Search
-    </button>
-    {/* Optional button to quickly reset your view to the full list */}
-    <button
-      type="button"
-      onClick={() => { setSearchQuery(''); setSelectedCustomer(null); }}
-      style={{ background: '#ddd', border: 'none', padding: '8px 12px', borderRadius: '4px', cursor: 'pointer' }}
-    >
-      Reset
-    </button>
-  </form>
-</div>
-
   return (
     <div style={{ display: 'flex', gap: '40px', marginTop: '20px', fontFamily: 'sans-serif' }}>
 
-      {/* LEFT SIDE: Directory and Creation Form */}
+      {/* LEFT SIDE: Directory, Search, and Creation Form */}
       <div style={{ flex: 1 }}>
         <h3>Global Customer Directory (Admin View)</h3>
+
+        {/* 🟢 FIXED: The Search Bar HTML is now safely inside the return rendering footprint */}
+        <div style={{ marginBottom: '20px', padding: '15px', border: '1px solid #ffc107', borderRadius: '6px', backgroundColor: '#fff9e6' }}>
+          <form onSubmit={handleSearch} style={{ display: 'flex', gap: '10px' }}>
+            <input
+              type="text"
+              placeholder="Search by ID or Name..."
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              style={{ padding: '8px', flex: 1, borderRadius: '4px', border: '1px solid #ccc' }}
+            />
+            <button type="submit" style={{ backgroundColor: '#ffc107', border: 'none', padding: '8px 15px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
+              🔍 Search
+            </button>
+            <button
+              type="button"
+              onClick={() => { setSearchQuery(''); setSelectedCustomer(null); }}
+              style={{ background: '#ddd', border: 'none', padding: '8px 12px', borderRadius: '4px', cursor: 'pointer' }}
+            >
+              Reset
+            </button>
+          </form>
+        </div>
+
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '30px' }}>
           {customers.map(customer => (
             <button
@@ -269,7 +266,6 @@ export default function AdminCustomerScreen() {
               <h5>💼 Authorize New Asset Allocation</h5>
               <form onSubmit={handleCreateAccount} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                 <select value={newAccountForm.accountType} onChange={e => setNewAccountForm({...newAccountForm, accountType: e.target.value})} style={{padding: '6px'}}>
-                  {/* 🟢 FIX 3: Changed option value target string to 'CheckingsAccount' */}
                   <option value="CheckingsAccount">Checking Account</option>
                   <option value="SavingsAccount">Savings Account</option>
                 </select>
