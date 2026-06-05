@@ -11,7 +11,7 @@ export default function AdminAccountScreen() {
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({ accountType: 'CheckingsAccount', balance: 0 });
 
-  // Creation state for a standalone new account mapping (Opening balance removed)
+  // Creation state for a standalone new account mapping
   const [newAccountForm, setNewAccountForm] = useState({
     customerId: '',
     accountType: 'CheckingsAccount'
@@ -19,7 +19,6 @@ export default function AdminAccountScreen() {
 
   // GET ALL ACCOUNTS ON INITIAL LOAD
   const fetchAllAccounts = () => {
-    // 🟢 UPDATED: Prefixed with /api/customers to match your class-level @RequestMapping
     fetch(`https://itransaction.onrender.com/api/customers/accounts`)
       .then(res => {
         if (!res.ok) throw new Error("Could not parse ledger baseline data rows.");
@@ -45,7 +44,6 @@ export default function AdminAccountScreen() {
 
     const isId = /^\d+$/.test(query) || /^[0-9a-fA-F]{24}$/.test(query);
 
-    // 🟢 UPDATED: Route configurations to match your exact controller setup
     let endpoint = `https://itransaction.onrender.com/api/customers/accounts/name/${query}`;
     if (isId) {
       endpoint = `https://itransaction.onrender.com/api/customers/accounts/id/${query}`;
@@ -82,7 +80,6 @@ export default function AdminAccountScreen() {
       return;
     }
 
-    // 🟢 UPDATED: Points directly to your combined customer/account endpoint layout
     fetch(`https://itransaction.onrender.com/api/customers/id/${newAccountForm.customerId}/accounts`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -108,22 +105,50 @@ export default function AdminAccountScreen() {
   const handleUpdateAccount = (e) => {
     e.preventDefault();
 
-    // 🟢 UPDATED: Prefixed path to safely map to your PutMapping
+    // 🟢 FIXED: Spreads the entire existing object so the backend accepts it as a complete Account entity payload
+    const updatedPayload = { ...selectedAccount, ...editForm };
+
     fetch(`https://itransaction.onrender.com/api/customers/accounts/${selectedAccount.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(editForm)
+      body: JSON.stringify(updatedPayload)
     })
     .then(res => {
       if (!res.ok) throw new Error("Failed to write overwrite adjustments.");
 
       alert("Ledger records successfully synchronized.");
-      const updated = { ...selectedAccount, ...editForm };
-      setAccounts(accounts.map(acc => acc.id === selectedAccount.id ? updated : acc));
-      setSelectedAccount(updated);
+      setAccounts(accounts.map(acc => acc.id === selectedAccount.id ? updatedPayload : acc));
+      setSelectedAccount(updatedPayload);
       setIsEditing(false);
     })
-    .catch(err => console.error(err));
+    .catch(err => {
+      console.error(err);
+      alert("Error: Failed to write overwrite adjustments.");
+    });
+  };
+
+  // 🟢 NEW: DELETION ROUTINE METHOD
+  const handleDeleteAccount = () => {
+    if (!selectedAccount) return;
+
+    const confirmDelete = window.confirm(`Are you absolutely sure you want to delete Account #${selectedAccount.id}? This cannot be undone.`);
+    if (!confirmDelete) return;
+
+    fetch(`https://itransaction.onrender.com/api/customers/accounts/${selectedAccount.id}`, {
+      method: 'DELETE'
+    })
+    .then(res => {
+      if (!res.ok) throw new Error("Backend rejected deletion processing loop.");
+
+      alert("Account permanently dropped from the tracking registry.");
+      setSelectedAccount(null);
+      setIsEditing(false);
+      fetchAllAccounts(); // Refresh global listing array state view
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Deletion request dropped. Check server logging parameters.");
+    });
   };
 
   const startEditing = () => {
@@ -184,7 +209,7 @@ export default function AdminAccountScreen() {
                 fontWeight: 'bold'
               }}
             >
-              💳 {acc.accountType} (Ref: #{acc.id}) — Balance: ${acc.balance.toLocaleString()}
+              💳 {acc.accountType} (Ref: #{acc.id}) — Balance: ${acc.balance?.toLocaleString()}
             </button>
           ))}
         </div>
@@ -226,11 +251,21 @@ export default function AdminAccountScreen() {
               <div>
                 <p><strong>System Account Ref ID:</strong> #{selectedAccount.id}</p>
                 <p><strong>Asset Classification:</strong> {selectedAccount.accountType}</p>
-                <p><strong>Current Secure Balance:</strong> ${selectedAccount.balance.toLocaleString()}</p>
+                <p><strong>Current Secure Balance:</strong> ${selectedAccount.balance?.toLocaleString()}</p>
 
-                <button onClick={startEditing} style={{ marginRight: '10px', padding: '6px 12px', cursor: 'pointer', fontWeight: 'bold' }}>
-                  ✏️ Adjust Balance/Type
-                </button>
+                <div style={{ marginTop: '20px', display: 'flex', gap: '10px' }}>
+                  <button onClick={startEditing} style={{ padding: '8px 14px', cursor: 'pointer', fontWeight: 'bold' }}>
+                    ✏️ Adjust Balance/Type
+                  </button>
+
+                  {/* 🟢 NEW: RED DELETION BUTTON CONTROL */}
+                  <button
+                    onClick={handleDeleteAccount}
+                    style={{ backgroundColor: '#dc3545', color: 'white', border: 'none', padding: '8px 14px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
+                  >
+                    🗑️ Delete Account
+                  </button>
+                </div>
               </div>
             ) : (
               <form onSubmit={handleUpdateAccount} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
