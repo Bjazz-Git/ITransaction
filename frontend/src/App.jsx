@@ -1,28 +1,93 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import CustomerScreen from './CustomerScreen';
+import AccountScreen from './AccountScreen';
+import LoginScreen from './LoginScreen';
+
+// 1. Import your old master-detail screens or keep them under new names if you split them.
+// For this example, let's assume we created specialized components for the admin view:
+import AdminCustomerScreen from './AdminCustomerScreen';
+import AdminAccountScreen from './AdminAccountScreen';
 
 function App() {
-  const [customers, setCustomers] = useState([]);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loggedInUser, setLoggedInUser] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false); // 👈 Track admin status
 
-  useEffect(() => {
-    // Hits your Node server running on port 5000
-    fetch('http://localhost:8080/api/customers')
-      .then(response => response.json())
-      .then(data => setCustomers(data));
-  }, []);
+  if (!isAuthenticated) {
+    return (
+      <LoginScreen
+        onLoginSuccess={(userData) => {
+          setIsAuthenticated(true);
+          setLoggedInUser(userData);
+
+          // Check if the credentials belong to your designated admin account
+          if (userData.username === 'admin') {
+            setIsAdmin(true);
+          } else {
+            setIsAdmin(false);
+          }
+        }}
+      />
+    );
+  }
 
   return (
-    <div>
-      <h1>Bank Customer Directory</h1>
-      <ul>
-        {customers.map(customer => (
-          <li key={customer.id}>{customer.name}</li>
-        ))}
-      </ul>
-    </div>
+    <Router>
+      <div style={{ padding: '20px', fontFamily: 'sans-serif' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h1>{isAdmin ? "⚠️ Admin Management Console" : `Welcome back, ${loggedInUser?.name}!`}</h1>
+          <button
+            onClick={() => { setIsAuthenticated(false); setLoggedInUser(null); setIsAdmin(false); }}
+            style={{ padding: '6px 12px', background: '#f44336', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+          >
+            Logout
+          </button>
+        </div>
+
+        {/* Navigation Bar changes dynamically depending on who is logged in */}
+        <nav style={{ marginBottom: '20px', display: 'flex', gap: '15px', marginTop: '10px' }}>
+          {isAdmin ? (
+            <>
+              <Link to="/admin/customers" style={navStyle}>Global Customers</Link>
+              <Link to="/admin/accounts" style={navStyle}>Global Accounts Ledger</Link>
+            </>
+          ) : (
+            <>
+              <Link to="/profile" style={navStyle}>My Profile</Link>
+              <Link to="/accounts" style={navStyle}>My Accounts</Link>
+            </>
+          )}
+        </nav>
+
+        <hr />
+
+        <Routes>
+          {isAdmin ? (
+            /* 🔓 ADMIN ROUTES: Renders the global lists with button sidebars */
+            <>
+              <Route path="/" element={<AdminCustomerScreen />} />
+              <Route path="/admin/customers" element={<AdminCustomerScreen />} />
+              <Route path="/admin/accounts" element={<AdminAccountScreen />} />
+            </>
+          ) : (
+            /* 🔒 USER ROUTES: Renders isolated data screens */
+            <>
+              <Route path="/" element={<CustomerScreen user={loggedInUser} />} />
+              <Route path="/profile" element={<CustomerScreen user={loggedInUser} />} />
+              <Route path="/accounts" element={<AccountScreen user={loggedInUser} />} />
+            </>
+          )}
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
+const navStyle = { textDecoration: 'none', color: '#007bff', fontWeight: 'bold', padding: '8px 16px', border: '1px solid #007bff', borderRadius: '4px' };
+
 export default App;
+// export default App;
 // import { useState } from 'react'
 // import reactLogo from './assets/react.svg'
 // import viteLogo from './assets/vite.svg'
