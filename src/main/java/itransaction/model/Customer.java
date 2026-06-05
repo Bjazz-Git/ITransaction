@@ -20,6 +20,8 @@ public class Customer extends User {
     private String name;
     @DocumentReference
     private List<Account> accounts;
+    // For ID incrementation
+    public static final String SEQUENCE_NAME = "customer_sequence";
 
     public Customer(int id, String name, String username, String password, List<Account> accounts) {
         super(username, password);

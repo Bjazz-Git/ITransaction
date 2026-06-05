@@ -2,6 +2,7 @@ package itransaction.model.data;
 
 import itransaction.model.Account;
 import itransaction.model.Customer;
+import itransaction.model.customerIdHandlers.SequenceGeneratorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,9 @@ public class CustomerService {
 
     @Autowired
     AccountRepo accountRepo;
+
+    @Autowired
+    private SequenceGeneratorService sequenceGeneratorService;
 
     // GetAllCustomers
     public List<Customer> getAllCustomers(){
@@ -44,6 +48,10 @@ public class CustomerService {
 
     // CreateCustomer
     public ResponseEntity<Customer> createCustomer(Customer customer){
+        if (customer != null){
+            customer.setId(sequenceGeneratorService.generateSequence(Customer.SEQUENCE_NAME));
+        }
+
         // Save customer accounts to account repo
         if (customer.getAccounts() != null) {
             // Store only accounts not present in the account repo in the list
