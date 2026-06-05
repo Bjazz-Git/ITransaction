@@ -16,7 +16,7 @@ export default function AdminCustomerScreen() {
   const [searchQuery, setSearchQuery] = useState('');
 
   // 2. Handler function to execute the targeted search query
-  const handleSearch = (e) => {
+const handleSearch = (e) => {
     e.preventDefault();
 
     if (!searchQuery.trim()) {
@@ -39,6 +39,10 @@ export default function AdminCustomerScreen() {
         return res.json();
       })
       .then(foundCustomer => {
+        // 🟢 1. Overwrite the array state so ONLY this single customer is rendered on the left
+        setCustomers([foundCustomer]);
+
+        // 2. Keep it opened in your inspector on the right
         setSelectedCustomer(foundCustomer);
         setIsEditing(false);
       })
@@ -174,9 +178,18 @@ export default function AdminCustomerScreen() {
             <button type="submit" style={{ backgroundColor: '#ffc107', border: 'none', padding: '8px 15px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
               🔍 Search
             </button>
+            {/* Update your search form's Reset button to re-fetch the complete directory */}
             <button
               type="button"
-              onClick={() => { setSearchQuery(''); setSelectedCustomer(null); }}
+              onClick={() => {
+                setSearchQuery('');
+                setSelectedCustomer(null);
+                // 🟢 Re-fetch the entire directory to unhide all profiles
+                fetch(`https://itransaction.onrender.com/api/customers`)
+                  .then(res => res.json())
+                  .then(data => setCustomers(data))
+                  .catch(err => console.error(err));
+              }}
               style={{ background: '#ddd', border: 'none', padding: '8px 12px', borderRadius: '4px', cursor: 'pointer' }}
             >
               Reset
